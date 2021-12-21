@@ -6,12 +6,16 @@ Copyright (c) 2019 - present AppSeed.us
 from flask import render_template, Response , request, jsonify, stream_with_context
 from apps.camera.camera import VideoCamera
 
-from apps import login_manager
+from apps import db,login_manager
 from apps.camera import blueprint
 from flask_login import login_required
 
 import pickle
 import os
+import json
+
+from apps.camera.models import stationconfig
+from apps.camera.directshipping import directshipping
 
 
 @blueprint.route('/video_feed')
@@ -35,13 +39,33 @@ def add_station_config():
             stations.append(station)
 
     stations.append({'name': s_name, 'location': o_area})
+    #str_station = " ".join(str(x) for x in stations)
+    row_json = json.dumps(stations)
+    print(row_json)
+    stationCon = stationconfig(**{"warehouse": "Charlotte", "station": "test", "configdata":row_json})
+    print(stationCon)
+    db.session.add(stationCon)
+    db.session.commit()
 
-    print(stations)
     addStationPickle = {}
     addStationPickle = stations
     pickle.dump(addStationPickle, open(get_correct_path("stationConfig.p"), "wb"))
     return jsonify(responseBody), 200
 
+
+def strToBinary(s):
+    bin_conv = []
+
+    for c in s:
+        # convert each char to
+        # ASCII value
+        ascii_val = ord(c)
+
+        # Convert ASCII value to binary
+        binary_val = bin(ascii_val)
+        bin_conv.append(binary_val[2:])
+
+    return (' '.join(bin_conv))
 
 def get_correct_path(relative_path):
     p = os.path.abspath(".").replace('/dist', "")

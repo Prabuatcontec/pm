@@ -9,6 +9,7 @@
 
 
   <!-- Modal -->
+<div id="alert-container"></div>
 
     <div class="container-fluid py-4">
 
@@ -53,9 +54,7 @@ Your browser does not support the HTML5 canvas tag.
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-<div class="alert alert-primary" role="alert">
-  This is a primary alert—check it out!
-</div>
+
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -80,7 +79,7 @@ Your browser does not support the HTML5 canvas tag.
                   {{ form.operator_area(class="form-control") }}
                 </div>
 
-                 
+
 
               </form>
       </div>
@@ -97,7 +96,6 @@ incrementCoords = 0
     var coordinateArr = [];
     var coordinateArr_ser  = [];
 $(document).ready(function(){
-    $('.alert').alert()
   $("#stationFormSubmit").click( function(){
     console.log("save");
     var sName = $("#station_name").val();
@@ -116,7 +114,14 @@ $(document).ready(function(){
             incrementCoords = 0
             coordinateArr = []
             coordinateArr_ser = [];
+            $('#alert-container').bootstrapAlert({
+              message:'Added Successfully!',
+                dismissible:true,
+                type:'success',// or 'info', 'warning', 'danger'
 
+            });
+
+             $('#closeThis').trigger('click');
         },
       });
 
@@ -139,6 +144,7 @@ $(document).ready(function(){
             ctx.beginPath(coordinateArr);
             ctx.moveTo(coordinateArr[co][0], coordinateArr[co][1]);
             ctx.lineTo(coordinateArr[co-1][0], coordinateArr[co-1][1]);
+            ctx.strokeStyle = '#ff0000';
             ctx.stroke();
         }
     }

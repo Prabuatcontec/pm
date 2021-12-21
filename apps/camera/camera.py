@@ -3,7 +3,11 @@
 import cv2
 import pickle
 import os
-import time, datetime
+import time, datetime, calendar
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+
+from apps.camera.models import motions
 
 
 
@@ -12,6 +16,7 @@ import time, datetime
 class VideoCamera(object):
     def __init__(self):
         # capturing video rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1
+        # "rtsp://admin:3J7Bm!j@@10.10.153.13/doc/page/preview.asp"
         self.video = cv2.VideoCapture("rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
         ret, self.frame1 = self.video.read()
         ret, self.frame2 = self.video.read()
@@ -68,10 +73,13 @@ class VideoCamera(object):
 
                     for point in movementPoints:
                         #clprint(station['name'])
-                        print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
+                        #print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
                         if (point[0] >= oldX and point[1] > oldY) and (point[0] <= key[0] and point[1] < key[1]):
                             self.motions.append({station['name']:  time.time()})
-                            print(self.motions)
+                            self.capture_motion(station['name'])
+                            #print(self.motions)
+
+
 
                 i = i + 1
                 oldX = key[0]
@@ -79,7 +87,7 @@ class VideoCamera(object):
 
         # encode OpenCV raw frame to jpg and displaying it
         ret, jpeg = cv2.imencode('.jpg', self.frame1)
-
+        self.motions = []
         self.frame1 = self.frame2
         ret, self.frame2 = self.video.read()
         self.frame2 = cv2.resize(self.frame2, (1100, 700), interpolation=cv2.INTER_AREA)
@@ -91,6 +99,20 @@ class VideoCamera(object):
         except EOFError:
             data = list()
         return data
+
+    def capture_motion(self, motion):
+        motion_added = self.motions
+
+        gmt = time.gmtime()
+        print("gmt:-", gmt)
+
+        # ts stores timestamp
+        ts = calendar.timegm(gmt)
+        if len(self.motions) > 0 :
+            motions_add = motions(**{  "area": str(motion), "timeadded": ts})
+            db.session.add(motions_add)
+            db.session.commit()
+
 
 
 def get_correct_path(relative_path):

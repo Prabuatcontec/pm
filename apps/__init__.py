@@ -7,7 +7,10 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
+import time
+import threading
 
+# from apps.camera.models import motions
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -39,6 +42,17 @@ def get_mouse_posn(event):
     topx, topy = event.x, event.y
     print(topx)
 
+
+def maintenance():
+    """ Background thread doing various maintenance tasks """
+    readText = 1 # motions()
+    print("Deepblu")
+    # while True:
+    #     print("Deepblu")
+    #     # do things...
+    #     readText.capture_motion()
+    #     time.sleep(1)
+
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
@@ -48,4 +62,7 @@ def create_app(config):
     register_extensions(app)
     register_blueprints(app)
     configure_database(app)
+    print("===================================================================")
+    threading.Thread(target=maintenance, daemon=True).start()
+
     return app
