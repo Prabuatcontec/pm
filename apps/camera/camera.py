@@ -42,7 +42,7 @@ class VideoCamera(object):
         movementPoints = []
         for contour in contours:
             (x, y, w, h) = cv2.boundingRect(contour)
-            if cv2.contourArea(contour) < 500:
+            if cv2.contourArea(contour) < 50:
                 continue
             movementPoints.append([x, y])
 
