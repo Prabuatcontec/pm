@@ -3,19 +3,18 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-
-from apps import db
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
 from apps.authentication.util import hash_pass
 
-class directshipping():
+class directshipping(db.Model):
 
     __tablename__ = 'directshipping'
 
     id = db.Column(db.Integer, primary_key=True)
     scantime = db.Column(db.String(50))
     station = db.Column(db.String(50))
-    operator = db.Column(db.String(50))
     operator = db.Column(db.String(50))
     product = db.Column(db.String(50))
     eventtype = db.Column(db.String(50))
@@ -48,3 +47,7 @@ class directshipping():
         station = request.form.get('station')
         stations = directshipping.query.filter_by(station=station).first()
         return stations if stations else None
+
+    def add_data(values):
+        qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage) VALUES ('"+values['scantime']+"','"+values['station']+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"') ")
+        db.session.execute(qry)

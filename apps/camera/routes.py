@@ -15,12 +15,12 @@ import os
 import json
 
 from apps.camera.models import stationconfig
-from apps.camera.directshipping import directshipping
 
 
 @blueprint.route('/video_feed')
 @login_required
 def video_feed():
+
     return Response(stream_with_context(gen(VideoCamera())),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -43,7 +43,7 @@ def add_station_config():
     row_json = json.dumps(stations)
     print(row_json)
     stationCon = stationconfig(**{"warehouse": "Charlotte", "station": "test", "configdata":row_json})
-    print(stationCon)
+
     db.session.add(stationCon)
     db.session.commit()
 

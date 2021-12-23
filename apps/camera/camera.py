@@ -7,7 +7,7 @@ import time, datetime, calendar
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
-from apps.camera.models import motions
+from apps.report.models import motions
 
 
 

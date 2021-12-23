@@ -12,7 +12,7 @@ db = SQLAlchemy()
 
 class Deepblu(db.Model):
 
-    def get_shipment_detail(self, id):
+    def get_shipment_detail(self, id=33966071):
         response = requests.get('https://deepbluapi.gocontec.com/autoreceive/direct-shipments?id='+id,
                                             headers={'Content-Type': 'application/json',
                                             'Authorization': 'Basic QVVUT1JFQ0VJVkU6YXV0b0AxMjM=' }

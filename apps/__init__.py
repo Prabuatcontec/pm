@@ -7,10 +7,9 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
-import time
+import time, requests
 import threading
-
-# from apps.camera.models import motions
+#from apps.report.models import motions
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -22,7 +21,7 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    for module_name in ('authentication', 'home', 'camera'):
+    for module_name in ('authentication', 'home', 'camera','report'):
         module = import_module('apps.{}.routes'.format(module_name))
         app.register_blueprint(module.blueprint)
 
@@ -45,13 +44,45 @@ def get_mouse_posn(event):
 
 def maintenance():
     """ Background thread doing various maintenance tasks """
-    readText = 1 # motions()
+    readText = 1
     print("Deepblu")
     # while True:
+    #     time.sleep(10)
     #     print("Deepblu")
     #     # do things...
-    #     readText.capture_motion()
-    #     time.sleep(1)
+    #     response = requests.get('https://deepbluapi.gocontec.com/autoreceive/direct-shipments?id=' + str(33966071),
+    #                             headers={'Content-Type': 'application/json',
+    #                                      'Authorization': 'Basic QVVUT1JFQ0VJVkU6YXV0b0AxMjM='}
+    #                             )
+    #     if response.status_code == 200:
+    #         print("resp")
+    #         print(response.content.decode("utf-8"))
+    #         print("=========")
+    #
+    #         if (response.content.decode("utf-8")  != ""):
+    #             print("=========DDDDDD")
+    #             result = response.json()
+    #             print(result)
+    #             for value in result:
+    #                  values = {"scantime": value["Scan Timestamp"],
+    #                                                "station": value["Work Station ID"],
+    #                                                "operator": value["Operator ID"],
+    #                                                "product": value["Product ID"],
+    #                                                "eventtype": value["Event Type"],
+    #                                                "shipid": value["Shipment ID"],
+    #                                                "errorcode": value["Error Code"],
+    #                                                "errormessage": value["Error Message"] }
+                     #motions.add_data(values)
+
+
+                # autoids = autoid().request_loader()
+                # if autoids != None:
+                #     upautoidlastValue  = autoids.value
+                #     db.session.query(autoid).filter(autoid.id == autoids.id).update({'value': len(result) + upautoidlastValue})
+                #     db.session.commit()
+
+            # print(result)
+
 
 def create_app(config):
     app = Flask(__name__)

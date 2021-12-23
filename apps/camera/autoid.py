@@ -10,7 +10,7 @@ from apps.authentication.util import hash_pass
 
 class autoid(db.Model):
 
-    __tablename__ = 'directshipping'
+    __tablename__ = 'autoid'
 
     id = db.Column(db.Integer, primary_key=True)
     optionfor = db.Column(db.String(50))
