@@ -52,10 +52,20 @@ class motions(db.Model):
         stations = db.session.execute(qrl)
         return stations if stations else None
 
+    def actionin_box_area(area):
+        qry = str("select (select timeadded as  pretimestamp from motions where id < cid   and area =  '"+area+"' order by id desc limit 1), (select id as pre_id from motions where id < cid  and area = '"+area+"' order by id desc limit 1), cid, area,timeadded, timestamp_diff,dd from (select id as cid, area, timeadded, timeadded - lag(timeadded) over (order by timeadded) as timestamp_diff, (to_timestamp(timeadded - lag(timeadded) over (order by timeadded)/1000) AT TIME ZONE 'UTC') as dd, (to_timestamp(timeadded - lag(timeadded) over (order by timeadded)/1000) AT TIME ZONE 'UTC')::timestamp::date as ddate from motions where area = '"+area+"' order by timeadded ) t where  (timestamp_diff > 0 and timestamp_diff < 30) order by cid  desc; ")
+        box_cnt = db.session.execute(qry)
+        return box_cnt if box_cnt else None
+
     def add_data(values):
         qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage) VALUES ('"+values['scantime']+"','"+values['station']+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"') ")
-        print(qry)
+
         db.session.execute(qry)
         db.session.commit()
         return qry
+
+    def actionin_shipping_data(area):
+        qry = str("select id as cid, station, EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp),  EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - lag(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) as timestamp_diff from directshipping where station = '"+area+"' order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) where  (timestamp_diff > 0 and timestamp_diff < 10) order by cid  desc")
+        box_cnt = db.session.execute(qry)
+        return box_cnt if box_cnt else None
 

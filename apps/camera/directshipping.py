@@ -15,7 +15,7 @@ class directshipping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     scantime = db.Column(db.String(50))
     station = db.Column(db.String(50))
-    operator = db.Column(db.String(50))
+    operator = db.Column(db.String)
     product = db.Column(db.String(50))
     eventtype = db.Column(db.String(50))
     shipid = db.Column(db.String(50))

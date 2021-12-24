@@ -90,7 +90,10 @@ class VideoCamera(object):
         self.motions = []
         self.frame1 = self.frame2
         ret, self.frame2 = self.video.read()
-        self.frame2 = cv2.resize(self.frame2, (1100, 700), interpolation=cv2.INTER_AREA)
+        if ret:
+            self.frame2 = cv2.resize(self.frame2, (1100, 700), interpolation=cv2.INTER_AREA)
+        else:
+            self.frame2 = self.frame1
         return jpeg.tobytes()
 
     def get_station_config(self):
