@@ -23,16 +23,14 @@ def report_box():
     time_report_hrs = {}
     # "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0
     totalAway = 0
-    print(stationTime)
+
     station_all_day = {}
     for station in stationTime:
         dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
-        if dt_obj in time_report_count:
-            print(dt_obj)
-        else:
-            time_report_count[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
-            time_report[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
-            time_report_hrs[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+        if dt_obj not in time_report_count:
+            time_report_count[dt_obj] = {"1-2": 0}
+            time_report[dt_obj] = {"1-2": 0}
+            time_report_hrs[dt_obj] = {"1-2": 0}
 
         if station[5] > 0:
             p_time = time_report[dt_obj]["1-2"]
@@ -55,62 +53,65 @@ def report_shipping():
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
+    pretime = {}
     totalAway = 0
     print(stationTime)
     station_all_day = {}
     for station in stationTime:
-        dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
-        if dt_obj in time_report_count:
-            print(dt_obj)
-        else:
+
+        dt_obj = datetime.fromtimestamp(station[3]).strftime('%d-%m-%Y')
+        print(dt_obj)
+        if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report_hrs[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
-
-        if station[5] < 60:
+            pretime[dt_obj] = 0
+        if pretime[dt_obj] < int(station[3]) or pretime[dt_obj] == 0:
+            pretime[dt_obj] = int(station[3])
+        if int(station[2]) < 60:
             p_time = time_report[dt_obj]["0-1"]
             time_report_count[dt_obj]["0-1"] = int(time_report_count[dt_obj]["0-1"]) + 1
-            time_report[dt_obj]["0-1"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["0-1"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["0-1"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["0-1"] = convert_time((int(p_time) + int(station[2])))
 
-        if 59 < station[5] <= 120:
+        if 59 < int(station[2]) <= 120:
             p_time = time_report[dt_obj]["1-2"]
             time_report_count[dt_obj]["1-2"] = int(time_report_count[dt_obj]["1-2"]) + 1
-            time_report[dt_obj]["1-2"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["1-2"] = convert_time((int(p_time) + station[5]))
-        if 120 < station[5] <= 180:
+            time_report[dt_obj]["1-2"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["1-2"] = convert_time((int(p_time) + int(station[2])))
+        if 120 < int(station[2]) <= 180:
             p_time = time_report[dt_obj]["2-3"]
             time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
-            time_report[dt_obj]["2-3"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["2-3"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + int(station[2])))
 
-        if 180 < station[5] <= 300:
+        if 180 < int(station[2]) <= 300:
             p_time = time_report[dt_obj]["3-5"]
             time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
-            time_report[dt_obj]["3-5"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["3-5"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + int(station[2])))
 
-        if 300 < station[5] <= 600:
+        if 300 < int(station[2]) <= 600:
             p_time = time_report[dt_obj]["5-10"]
             time_report_count[dt_obj]["5-10"] = int(time_report_count[dt_obj]["5-10"]) + 1
-            time_report[dt_obj]["5-10"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["5-10"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + int(station[2])))
 
-        if 600 < station[5] <= 900:
+        if 600 < int(station[2]) <= 900:
             p_time = time_report[dt_obj]["10-15"]
             time_report_count[dt_obj]["10-15"] = int(time_report_count[dt_obj]["10-15"]) + 1
-            time_report[dt_obj]["10-15"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["10-15"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + int(station[2])))
 
-        if 900 < station[5] <= 3600:
+        if 900 < int(station[2]) <= 3600:
             p_time = time_report[dt_obj]["15-60"]
             time_report_count[dt_obj]["15-60"] = int(time_report_count[dt_obj]["15-60"]) + 1
-            time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
+            time_report[dt_obj]["15-60"] = (int(p_time) + int(station[2]))
+            time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + int(station[2])))
 
 
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
-                       "time_report_hrs": time_report_hrs}
+                       "time_report_hrs": time_report_hrs, "pretime": pretime}
 
     result = {'result': station_all_day}
     return jsonify(result), 200
@@ -156,18 +157,19 @@ def report():
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
-    #"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0
-    totalAway = 0
+    pretime = {}
+
 
     station_all_day = {}
     for station in stationTime:
         dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
-        if  dt_obj in time_report_count:
-            print(dt_obj)
-        else:
+        if  dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report_hrs[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+            pretime[dt_obj] = 0
+        if pretime[dt_obj] < int(station[0]) or pretime[dt_obj] == 0:
+            pretime[dt_obj] = int(station[0])
         if 59 < station[5] <= 120:
 
             p_time = time_report[dt_obj]["1-2"]
@@ -204,7 +206,7 @@ def report():
             time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
 
-    station_all_day = {"time_report_count": time_report_count, "time_report": time_report, "time_report_hrs": time_report_hrs}
+    station_all_day = {"time_report_count": time_report_count, "time_report": time_report, "time_report_hrs": time_report_hrs, "pretime": pretime}
 
     result = {'result': station_all_day}
     return jsonify(result), 200

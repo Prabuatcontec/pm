@@ -65,7 +65,8 @@ class motions(db.Model):
         return qry
 
     def actionin_shipping_data(area):
-        qry = str("select id as cid, station, EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp),  EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - lag(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) as timestamp_diff from directshipping where station = '"+area+"' order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) where  (timestamp_diff > 0 and timestamp_diff < 10) order by cid  desc")
+        qry = str("select cid, station ,timestamp_diff,scantime    from (select id as cid, station, EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) as scantime,  EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - lag(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) as timestamp_diff   from directshipping where station='"+area+"' order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) ) t where  (timestamp_diff > 0 ) order by cid  desc;")
+        print(qry)
         box_cnt = db.session.execute(qry)
         return box_cnt if box_cnt else None
 

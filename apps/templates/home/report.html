@@ -82,14 +82,14 @@
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
           <div class="card z-index-2 ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-info shadow-info border-radius-lg py-3 pe-1">
+              <div class="bg-gradient-secondary   shadow-secondary   border-radius-lg py-3 pe-1">
                 <div class="chart">
                   <canvas id="chart-bars-shipping" class="chart-canvas" height="250"></canvas>
                 </div>
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Operator Activity</h6>
+              <h6 class="mb-0 ">Shipment</h6>
               <p class="text-sm ">Last Campaign Performance</p>
               <hr class="dark horizontal">
               <div class="d-flex ">
@@ -109,7 +109,7 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 "> Daily Sales </h6>
+              <h6 class="mb-0 "> Box Area Activity </h6>
               <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) increase in today sales. </p>
               <hr class="dark horizontal">
               <div class="d-flex ">
@@ -146,7 +146,7 @@
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
           <div class="card z-index-2  ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+              <div class="alert-light light border-radius-lg py-3 pe-1">
                 <div class="chart">
                   <canvas id="chart-line" class="chart-canvas" height="250"></canvas>
                 </div>
@@ -178,7 +178,8 @@
   <script src="/static/assets/js/plugins/chartjs.min.js"></script>
   <script>
    $(document).ready(function () {
-
+    var firstMotion;
+    var firstShipping;
 <!--   window.setTimeout(function () {-->
 <!--  window.location.reload();-->
 <!--}, 30000);-->
@@ -190,10 +191,144 @@ data: {},
 contentType: "application/json",
 dataType: "json",
 success: function(response) {
-
+    console.log(0000000000000000)
     console.log(response)
+    var lab = []
+    var lab_num = []
+    for (var da = 6; da >= 0; da--) {
+        var date = new Date();
+        date.setDate(date.getDate() - da);
+
+        var finalDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+        var finalDateNum = (date.getMonth() + 1) + '/' + date.getDate();
+        lab.push(finalDate)
+        lab_num.push(finalDateNum)
+    }
+
+    for (so = 0; so <= 6; so++) {
+        if (response['result']['time_report_hrs'][lab[so]] === undefined) {
+            response['result']['time_report_hrs'][lab[so]] = {
+                "1-2": 0
+            };
+            response['result']['time_report_hrs'][lab[so]] = {
+                "1-2": 0
+            };
+            response['result']['time_report_hrs'][lab[so]] = {
+                "1-2": 0
+            };
+
+        }
+    }
+
+
+
+
+    var ctx2 = document.getElementById("chart-line-shipping").getContext("2d");
+
+    new Chart(ctx2, {
+      type: "line",
+      data: {
+        labels: lab_num,
+        datasets: [{
+          label: "Boxing area",
+          tension: 0,
+          borderWidth: 0,
+          pointRadius: 5,
+          pointBackgroundColor: "rgba(255, 255, 255, .6)",
+          pointBorderColor: "transparent",
+          borderColor: "rgba(255, 255, 255, .6)",
+          borderColor: "rgba(255, 255, 255, .6)",
+          borderWidth: 4,
+          backgroundColor: "transparent",
+          fill: true,
+          data: [response['result']['time_report_hrs'][lab[0]]['1-2'], response['result']['time_report_hrs'][lab[1]]['1-2'], response['result']['time_report_hrs'][lab[2]]['1-2'], response['result']['time_report_hrs'][lab[3]]['1-2'], response['result']['time_report_hrs'][lab[4]]['1-2'], response['result']['time_report_hrs'][lab[5]]['1-2'], response['result']['time_report_hrs'][lab[6]]['1-2']],
+          maxBarThickness: 6
+
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += parseInt(context.parsed.y) + ' min';
+                            }
+                            return label;
+                        }
+                    }
+                }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+                        callback: function(label, index, labels) {
+                            return label + ' min';
+
+                            // return _label;
+                        },
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+
+
 
     }
+
     });
 
 
@@ -207,14 +342,19 @@ success: function(response) {
     console.log(response)
     var ctx = document.getElementById("chart-bars").getContext("2d");
 
+    firstMotion = response['result']['pretime'];
+
 
     var lab = []
+    var lab_num = []
     for (var da = 6; da >= 0; da--) {
         var date = new Date();
         date.setDate(date.getDate() - da);
 
         var finalDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+        var finalDateNum = (date.getMonth() + 1) + '/' + date.getDate();
         lab.push(finalDate)
+        lab_num.push(finalDateNum)
     }
 
     for (so = 0; so <= 6; so++) {
@@ -252,63 +392,63 @@ success: function(response) {
 
     var dataset = [{
         label: "1-2",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 0,
         borderRadius: 1,
         borderSkipped: false,
-        backgroundColor: "rgba(200, 105, 255, .8)",
+        backgroundColor: "rgba(200, 105, 255, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['1-2'], response['result']['time_report_hrs'][lab[1]]['1-2'], response['result']['time_report_hrs'][lab[2]]['1-2'], response['result']['time_report_hrs'][lab[3]]['1-2'], response['result']['time_report_hrs'][lab[4]]['1-2'], response['result']['time_report_hrs'][lab[5]]['1-2']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }, {
         label: "2-3",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 0,
         borderRadius: 1,
         borderSkipped: false,
-        backgroundColor: "rgba(100, 155, 200, .8)",
+        backgroundColor: "rgba(100, 155, 200, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['2-3'], response['result']['time_report_hrs'][lab[1]]['2-3'], response['result']['time_report_hrs'][lab[2]]['2-3'], response['result']['time_report_hrs'][lab[3]]['2-3'], response['result']['time_report_hrs'][lab[4]]['2-3'], response['result']['time_report_hrs'][lab[5]]['2-3']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }, {
         label: "3-5",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 0,
         borderRadius: 1,
         borderSkipped: false,
-        backgroundColor: "rgba(0, 200, 200, .8)",
+        backgroundColor: "rgba(0, 200, 200, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['3-5'], response['result']['time_report_hrs'][lab[1]]['3-5'], response['result']['time_report_hrs'][lab[2]]['3-5'], response['result']['time_report_hrs'][lab[3]]['3-5'], response['result']['time_report_hrs'][lab[4]]['3-5'], response['result']['time_report_hrs'][lab[5]]['3-5']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }, {
         label: "5-10",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 0,
         borderRadius: 1,
         borderSkipped: false,
-        backgroundColor: "rgba(204,0,0, .8)",
+        backgroundColor: "rgba(204,0,0, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['5-10'], response['result']['time_report_hrs'][lab[1]]['5-10'], response['result']['time_report_hrs'][lab[2]]['5-10'], response['result']['time_report_hrs'][lab[3]]['5-10'], response['result']['time_report_hrs'][lab[4]]['5-10'], response['result']['time_report_hrs'][lab[5]]['5-10']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }, {
         label: "10-15",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 1,
         borderRadius: 4,
         borderSkipped: false,
-        backgroundColor: "rgba(102,0,51, .8)",
+        backgroundColor: "rgba(102,0,51, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['10-15'], response['result']['time_report_hrs'][lab[1]]['10-15'], response['result']['time_report_hrs'][lab[2]]['10-15'], response['result']['time_report_hrs'][lab[3]]['10-15'], response['result']['time_report_hrs'][lab[4]]['10-15'], response['result']['time_report_hrs'][lab[5]]['10-15']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }, {
         label: "15-60",
-        tension: 0.4,
+        tension: 0.8,
         borderWidth: 1,
         borderRadius: 4,
         borderSkipped: false,
-        backgroundColor: "rgba(255,153,51, .8)",
+        backgroundColor: "rgba(255,153,51, .6)",
         data: [response['result']['time_report_hrs'][lab[0]]['15-60'], response['result']['time_report_hrs'][lab[1]]['15-60'], response['result']['time_report_hrs'][lab[2]]['15-60'], response['result']['time_report_hrs'][lab[3]]['15-60'], response['result']['time_report_hrs'][lab[4]]['15-60'], response['result']['time_report_hrs'][lab[5]]['15-60']],
-        maxBarThickness: 30
+        maxBarThickness: 5
     }];
     var timedata = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: lab,
+            labels: lab_num,
             datasets: dataset,
         },
         options: {
@@ -398,32 +538,258 @@ success: function(response) {
     });
 },
 });
-});
+
+<!--===== Shipping ======-->
+
+
+$.ajax({
+type: "GET",
+url: "report/shipping",
+data: {},
+contentType: "application/json",
+dataType: "json",
+success: function(response) {
+
+    console.log(response)
+    var ctx = document.getElementById("chart-bars-shipping").getContext("2d");
+
+    firstShipping = response['result']['pretime'];
 
 
 
+    var lab = []
+    var lab_num = []
+    for (var da = 6; da >= 0; da--) {
+        var date = new Date();
+        date.setDate(date.getDate() - da);
+
+        var finalDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+        var finalDateNum = (date.getMonth() + 1) + '/' + date.getDate();
+        lab.push(finalDate)
+        lab_num.push(finalDateNum)
+    }
+
+    for (so = 0; so <= 6; so++) {
+        if (response['result']['time_report_count'][lab[so]] === undefined) {
+            response['result']['time_report_count'][lab[so]] = {
+                "0-1": 0,
+                "1-2": 0,
+                "2-3": 0,
+                "3-5": 0,
+                "5-10": 0,
+                "10-15": 0,
+                "15-60": 0
+            };
+            response['result']['time_report_hrs'][lab[so]] = {
+                "0-1": 0,
+                "1-2": 0,
+                "2-3": 0,
+                "3-5": 0,
+                "5-10": 0,
+                "10-15": 0,
+                "15-60": 0
+            };
+            response['result']['time_report'][lab[so]] = {
+                "0-1": 0,
+                "1-2": 0,
+                "2-3": 0,
+                "3-5": 0,
+                "5-10": 0,
+                "10-15": 0,
+                "15-60": 0
+            };
+
+        }
+    }
+    console.log(lab)
+    console.log(response)
+
+
+    var dataset = [{
+        label: "0-1",
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(255,69,0, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['0-1'], response['result']['time_report_hrs'][lab[1]]['0-1'], response['result']['time_report_hrs'][lab[2]]['0-1'], response['result']['time_report_hrs'][lab[3]]['0-1'], response['result']['time_report_hrs'][lab[4]]['0-1'], response['result']['time_report_hrs'][lab[5]]['0-1']],
+        maxBarThickness: 5
+    },{
+        label: "1-2",
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(255,215,0, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['1-2'], response['result']['time_report_hrs'][lab[1]]['1-2'], response['result']['time_report_hrs'][lab[2]]['1-2'], response['result']['time_report_hrs'][lab[3]]['1-2'], response['result']['time_report_hrs'][lab[4]]['1-2'], response['result']['time_report_hrs'][lab[5]]['1-2']],
+        maxBarThickness: 5
+    }, {
+        label: "2-3",
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(100, 155, 200, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['2-3'], response['result']['time_report_hrs'][lab[1]]['2-3'], response['result']['time_report_hrs'][lab[2]]['2-3'], response['result']['time_report_hrs'][lab[3]]['2-3'], response['result']['time_report_hrs'][lab[4]]['2-3'], response['result']['time_report_hrs'][lab[5]]['2-3']],
+        maxBarThickness: 5
+    }, {
+        label: "3-5",
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(0, 200, 200, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['3-5'], response['result']['time_report_hrs'][lab[1]]['3-5'], response['result']['time_report_hrs'][lab[2]]['3-5'], response['result']['time_report_hrs'][lab[3]]['3-5'], response['result']['time_report_hrs'][lab[4]]['3-5'], response['result']['time_report_hrs'][lab[5]]['3-5']],
+        maxBarThickness: 5
+    }, {
+        label: "5-10",
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(204,0,0, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['5-10'], response['result']['time_report_hrs'][lab[1]]['5-10'], response['result']['time_report_hrs'][lab[2]]['5-10'], response['result']['time_report_hrs'][lab[3]]['5-10'], response['result']['time_report_hrs'][lab[4]]['5-10'], response['result']['time_report_hrs'][lab[5]]['5-10']],
+        maxBarThickness: 5
+    }, {
+        label: "10-15",
+        tension: 0.8,
+        borderWidth: 1,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(102,0,51, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['10-15'], response['result']['time_report_hrs'][lab[1]]['10-15'], response['result']['time_report_hrs'][lab[2]]['10-15'], response['result']['time_report_hrs'][lab[3]]['10-15'], response['result']['time_report_hrs'][lab[4]]['10-15'], response['result']['time_report_hrs'][lab[5]]['10-15']],
+        maxBarThickness: 5
+    }, {
+        label: "15-60",
+        tension: 0.8,
+        borderWidth: 1,
+        borderRadius: 0,
+        borderSkipped: false,
+        backgroundColor: "rgba(255,153,51, .6)",
+        data: [response['result']['time_report_hrs'][lab[0]]['15-60'], response['result']['time_report_hrs'][lab[1]]['15-60'], response['result']['time_report_hrs'][lab[2]]['15-60'], response['result']['time_report_hrs'][lab[3]]['15-60'], response['result']['time_report_hrs'][lab[4]]['15-60'], response['result']['time_report_hrs'][lab[5]]['15-60']],
+        maxBarThickness: 5
+    }];
+    var timedata = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: lab_num,
+            datasets: dataset,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += parseInt(context.parsed.y) + ' min';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            scales: {
+                y: {
+                    stacked: true,
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 500,
+                        beginAtZero: true,
+                        padding: 10,
+                        font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                        color: "#fff",
+                        callback: function(label, index, labels) {
+                            return label + ' min';
+
+                            // return _label;
+                        }
+                    },
+                },
+                x: {
+                    stacked: true,
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)',
+
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#f8f9fa',
+                        padding: 10,
+                        font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                        }
+                    }
+                },
+            },
+        },
+    });
 
 
 
     var ctx2 = document.getElementById("chart-line").getContext("2d");
 
+    for (so = 0; so <= 6; so++) {
+        if (firstMotion[lab[so]] === undefined) {
+            firstMotion[lab[so]] = 0;
+            firstShipping[lab[so]] = 0;
+
+        }
+    }
+
     new Chart(ctx2, {
       type: "line",
       data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        labels: lab_num,
         datasets: [{
-          label: "Mobile apps",
+          label: "Boxing area",
           tension: 0,
           borderWidth: 0,
           pointRadius: 5,
-          pointBackgroundColor: "rgba(255, 255, 255, .8)",
+          pointBackgroundColor: "rgba(0, 255, 255, .6)",
           pointBorderColor: "transparent",
-          borderColor: "rgba(255, 255, 255, .8)",
-          borderColor: "rgba(255, 255, 255, .8)",
+          borderColor: "rgba(255, 255, 255, .6)",
+          borderColor: "rgba(255, 255, 255, .6)",
           borderWidth: 4,
           backgroundColor: "transparent",
           fill: true,
-          data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+          data: [parseInt(firstMotion[lab[0]]-firstShipping[lab[0]])/60,parseInt(firstMotion[lab[1]]-firstShipping[lab[1]])/60, parseInt(firstMotion[lab[2]]-firstShipping[lab[2]])/60, parseInt(firstMotion[lab[3]]-firstShipping[lab[3]])/60, parseInt(firstMotion[lab[4]]-firstShipping[lab[4]])/60, parseInt(firstMotion[lab[5]]-firstShipping[lab[5]])/60, parseInt(firstMotion[lab[6]]-firstShipping[lab[6]])/60],
           maxBarThickness: 6
 
         }],
@@ -434,7 +800,21 @@ success: function(response) {
         plugins: {
           legend: {
             display: false,
-          }
+          },tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += parseInt(context.parsed.y) + ' min';
+                            }
+                            return label;
+                        }
+                    }
+                }
         },
         interaction: {
           intersect: false,
@@ -453,6 +833,11 @@ success: function(response) {
             ticks: {
               display: true,
               color: '#f8f9fa',
+                        callback: function(label, index, labels) {
+                            return label + ' min';
+
+                            // return _label;
+                        },
               padding: 10,
               font: {
                 size: 14,
@@ -487,6 +872,17 @@ success: function(response) {
         },
       },
     });
+
+},
+});
+});
+
+
+
+
+
+
+
 
   </script>
 
