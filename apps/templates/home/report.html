@@ -146,7 +146,7 @@
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
           <div class="card z-index-2  ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="alert-light light border-radius-lg py-3 pe-1">
+              <div class="bg-gradient-warning shadow-warning border-radius-lg py-3 pe-1">
                 <div class="chart">
                   <canvas id="chart-line" class="chart-canvas" height="250"></canvas>
                 </div>
@@ -166,6 +166,49 @@
 
       </div>
 
+      <div class="row mt-4">
+        <div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-light  shadow-light  border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-line-date" class="chart-canvas" height="250"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 ">Operator Activity</h6>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> campaign sent 2 days ago </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-light  shadow-light  border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-doughnut" class="chart-canvas" height="250"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 ">EOL Hrs</h6>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> campaign sent 2 days ago </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
 
       {% include 'includes/footer.html' %}
     </div>
@@ -180,6 +223,7 @@
    $(document).ready(function () {
     var firstMotion;
     var firstShipping;
+    var timeIntervalCount;
 <!--   window.setTimeout(function () {-->
 <!--  window.location.reload();-->
 <!--}, 30000);-->
@@ -191,7 +235,7 @@ data: {},
 contentType: "application/json",
 dataType: "json",
 success: function(response) {
-    console.log(0000000000000000)
+     var charbars = charbar()
     console.log(response)
     var lab = []
     var lab_num = []
@@ -331,7 +375,7 @@ success: function(response) {
 
     });
 
-
+function charbar() {
 $.ajax({
 type: "GET",
 url: "report",
@@ -536,12 +580,15 @@ success: function(response) {
             },
         },
     });
+
+    var shippingCharbar = ShippingCharBar()
 },
 });
+}
 
 <!--===== Shipping ======-->
 
-
+function ShippingCharBar() {
 $.ajax({
 type: "GET",
 url: "report/shipping",
@@ -554,6 +601,7 @@ success: function(response) {
     var ctx = document.getElementById("chart-bars-shipping").getContext("2d");
 
     firstShipping = response['result']['pretime'];
+    timeIntervalCount = response['result']['hrShippingCount']
 
 
 
@@ -761,7 +809,27 @@ success: function(response) {
         },
     });
 
+  var chartLine = ChartLine(lab)
 
+},
+});
+
+
+ }
+
+function ChartLine(lab) {
+
+    var lab = []
+    var lab_num = []
+    for (var da = 6; da >= 0; da--) {
+        var date = new Date();
+        date.setDate(date.getDate() - da);
+
+        var finalDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+        var finalDateNum = (date.getMonth() + 1) + '/' + date.getDate();
+        lab.push(finalDate)
+        lab_num.push(finalDateNum)
+    }
 
     var ctx2 = document.getElementById("chart-line").getContext("2d");
 
@@ -782,7 +850,7 @@ success: function(response) {
           tension: 0,
           borderWidth: 0,
           pointRadius: 5,
-          pointBackgroundColor: "rgba(0, 255, 255, .6)",
+          pointBackgroundColor: "rgba(255, 255, 255, .6)",
           pointBorderColor: "transparent",
           borderColor: "rgba(255, 255, 255, .6)",
           borderColor: "rgba(255, 255, 255, .6)",
@@ -873,8 +941,274 @@ success: function(response) {
       },
     });
 
-},
+
+
+<!--    0000000000000000-->
+var chartLineData = chartLineDataAdd()
+
+}
+
+
+
+function chartLineDataAdd() {
+    var ctx2 = document.getElementById("chart-line-date").getContext("2d");
+
+     var lab = []
+    var lab_num = []
+    for (var da = 6; da >= 0; da--) {
+        var date = new Date();
+        date.setDate(date.getDate() - da);
+
+        var finalDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear();
+        var finalDateNum = (date.getMonth() + 1) + '/' + date.getDate();
+        lab.push(finalDate)
+        lab_num.push(finalDateNum)
+    }
+
+    for (so = 0; so <= 6; so++) {
+      if (timeIntervalCount[lab[so]]  === undefined ) {
+          timeIntervalCount[lab[so]] = {0: 0,
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0,
+          5: 0,
+          6: 0,
+          7: 0,
+          8: 0,
+          9: 0,
+          10: 0,
+          11: 0,
+          12: 0,
+          13: 0,
+          14: 0,
+          15: 0,
+          16: 0,
+          17: 0,
+          18: 0,
+          19: 0,
+          20: 0,
+          21: 0,
+          22: 0,
+          23: 0
+          };
+      }
+    }
+
+
+    var data = {
+  labels: lab_num,
+  datasets: []
+};
+
+   var cxp =  new Chart(ctx2, {
+  type: 'bar',
+  data: data,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    color: 'rgba(255, 255, 255, .2)',
+    plugins: {
+      legend: {
+        position: false,
+      },
+      scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: 'rgba(255, 255, 255, .2)'
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+                        callback: function(label, index, labels) {
+                            return label + ' min';
+
+                            // return _label;
+                        },
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#f8f9fa',
+              padding: 10,
+              font: {
+                size: 14,
+                weight: 300,
+                family: "Roboto",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        }
+    }
+  },
 });
+
+var color = {0:'#ffffff',
+              1:'#ffffff',
+              2:'#ffffff',
+              3:'#ffffff',
+              4:'#800080',
+              5:'#00008B',
+              6:'#FFC0CB',
+              7:'#FFA500',
+              8:'#FFFF00',
+              9:'#808080',
+              10:'#FFA000',
+              11:'#657383',
+              12:'#16E2F5',
+              13:'#848B79',
+              14:'#550A35',
+              15:'#7E587E',
+              16:'#FBFBF9',
+              17:'#8B0000',
+              18:'#ffffff',
+              19:'#ffffff',
+              20:'#ffffff',
+              21:'#ffffff',
+              22:'#ffffff',
+              23:'#ffffff'
+              }
+              var lb_hrs = {};
+  for(x = 0; x <=23; x++) {
+
+    lb_hrs[x] = x + 'hrs';
+    var newDataset = {
+        label: 'Hr ' + (x + 1),
+        backgroundColor: color[x],
+        borderWidth: 0,
+        tension: 0,
+      };
+      cxp.data.datasets.push(newDataset);
+      cxp.update();
+
+      for(xp = 0; xp <=6; xp++) {
+       cxp.data.datasets[x].data.push(timeIntervalCount[lab[xp]][x]);
+       }
+
+      }
+
+
+
+var ctx2 = document.getElementById("chart-doughnut").getContext("2d");
+
+
+var newcolor = [] ;
+var newLab = [] ;
+    var pp = 0;
+console.log(color[0])
+var pp=0;
+for (x = 0 ;x <= 23; x++) {
+         var sum = 0;
+        for(xp = 0; xp <=6; xp++) {
+        sum = sum + timeIntervalCount[lab[xp]][x];
+
+         }
+         console.log(x)
+         console.log(color[4])
+         if(sum > 0 ){
+         newcolor[pp] = color[x];
+         newLab[x + 'Hrs'] = x + 'Hrs';
+         pp = pp + 1;
+         }
+     }
+
+
+
+ var data = {
+  labels: newLab,
+  datasets: []
+};
+
+   var cxprt =  new Chart(ctx2, {
+  type: 'doughnut',
+  data: {labels:newLab},
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    color: 'rgba(255, 255, 255, .2)',
+    plugins: {
+      legend: {
+        position: false,
+      },
+
+    }
+  },
+});
+
+console.log(newcolor)
+console.log(newLab)
+var newDataset = {
+        label: 'Hrs',
+        backgroundColor: newcolor,
+        borderWidth: 0,
+        tension: 0,
+      };
+      cxprt.data.datasets.push(newDataset);
+      cxprt.update();
+
+    console.log(cxprt.data.datasets[0]);
+
+    var newcolor = [] ;
+    var pp = 0;
+    for (x = 0 ;x <= 23; x++) {
+         var sum = 0;
+        for(xp = 0; xp <=6; xp++) {
+        sum = sum + timeIntervalCount[lab[xp]][x];
+
+         }
+          cxprt.data.labels.push(x + 'Hr');
+         cxprt.data.datasets[0].data.push(sum);
+         if(sum > 0 ){
+         newcolor[pp] = color[x];
+         pp = pp + 1;
+         }
+<!--         #cxprt.data.datasets[0].backgroundColor.push(newcolor);-->
+         cxprt.update();
+     }
+
+
+
+
+
+
+<!--    0000000000000000-->
+
+
+}
+
+function getColors(length){
+    let pallet = ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"];
+    let colors = [];
+
+    for(let i = 0; i < length; i++) {
+      colors.push(pallet[i % (pallet.length - 1)]);
+    }
+
+    return colors;
+  }
 });
 
 

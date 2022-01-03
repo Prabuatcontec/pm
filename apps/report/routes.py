@@ -38,7 +38,6 @@ def report_box():
             time_report[dt_obj]["1-2"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["1-2"] = convert_time((int(p_time) + station[5]))
 
-
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
                        "time_report_hrs": time_report_hrs}
 
@@ -54,18 +53,25 @@ def report_shipping():
     time_report = {}
     time_report_hrs = {}
     pretime = {}
+    hrShippingCount = {}
     totalAway = 0
-    print(stationTime)
+
     station_all_day = {}
     for station in stationTime:
 
         dt_obj = datetime.fromtimestamp(station[3]).strftime('%d-%m-%Y')
-        print(dt_obj)
+
         if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report_hrs[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             pretime[dt_obj] = 0
+            hrShippingCount[dt_obj] = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0,
+                                       8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0,
+                                       20: 0,
+                                       21: 0, 22: 0, 23: 0}
+
+        hrShippingCount[dt_obj][int(station[4])] = hrShippingCount[dt_obj][int(station[4])] + 1
         if pretime[dt_obj] < int(station[3]) or pretime[dt_obj] == 0:
             pretime[dt_obj] = int(station[3])
         if int(station[2]) < 60:
@@ -109,12 +115,15 @@ def report_shipping():
             time_report[dt_obj]["15-60"] = (int(p_time) + int(station[2]))
             time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + int(station[2])))
 
-
-    station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
-                       "time_report_hrs": time_report_hrs, "pretime": pretime}
+    station_all_day = {"time_report_count": time_report_count,
+                       "time_report": time_report,
+                       "time_report_hrs": time_report_hrs,
+                       "pretime": pretime,
+                       "hrShippingCount": hrShippingCount}
 
     result = {'result': station_all_day}
     return jsonify(result), 200
+
 
 @blueprint.route('/report')
 @login_required
@@ -159,11 +168,10 @@ def report():
     time_report_hrs = {}
     pretime = {}
 
-
     station_all_day = {}
     for station in stationTime:
         dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
-        if  dt_obj not in time_report_count:
+        if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report_hrs[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
@@ -171,7 +179,6 @@ def report():
         if pretime[dt_obj] < int(station[0]) or pretime[dt_obj] == 0:
             pretime[dt_obj] = int(station[0])
         if 59 < station[5] <= 120:
-
             p_time = time_report[dt_obj]["1-2"]
             time_report_count[dt_obj]["1-2"] = int(time_report_count[dt_obj]["1-2"]) + 1
             time_report[dt_obj]["1-2"] = (int(p_time) + station[5])
@@ -192,7 +199,7 @@ def report():
             p_time = time_report[dt_obj]["5-10"]
             time_report_count[dt_obj]["5-10"] = int(time_report_count[dt_obj]["5-10"]) + 1
             time_report[dt_obj]["5-10"] = (int(p_time) + station[5])
-            time_report_hrs[dt_obj]["5-10"] =convert_time( (int(p_time) + station[5]))
+            time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
 
         if 600 < station[5] <= 900:
             p_time = time_report[dt_obj]["10-15"]
@@ -206,14 +213,15 @@ def report():
             time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
 
-    station_all_day = {"time_report_count": time_report_count, "time_report": time_report, "time_report_hrs": time_report_hrs, "pretime": pretime}
+    station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
+                       "time_report_hrs": time_report_hrs, "pretime": pretime}
 
     result = {'result': station_all_day}
     return jsonify(result), 200
 
 
 def convert_time(seconds):
-    return  seconds/60
+    return seconds / 60
     seconds = seconds % (24 * 3600)
     hour = seconds // 3600
     seconds %= 3600
@@ -221,8 +229,3 @@ def convert_time(seconds):
     seconds %= 60
 
     return "%d:%02d:%02d" % (hour, minutes, seconds)
-
-
-
-
-
