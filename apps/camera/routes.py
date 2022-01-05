@@ -3,8 +3,10 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import render_template, Response , request, jsonify, stream_with_context
+from flask import render_template, Response , request, jsonify, stream_with_context, session
 from apps.camera.camera import VideoCamera
+
+from apps.camera.cameravideo import VideoDataCamera
 
 from apps import db,login_manager
 from apps.camera import blueprint
@@ -24,7 +26,50 @@ def video_feed():
     return Response(stream_with_context(gen(VideoCamera())),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@blueprint.route('/station_feed')
+@login_required
+def station_feed():
 
+    return Response(stream_with_context(gen(VideoDataCamera())),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+
+
+
+@blueprint.route('/get_station_name', methods=['POST'])
+def get_station_name():
+
+    data = request.get_json()
+    x = data['x']
+    y = data['y']
+    stations = []
+    listStation =  get_station_config()
+    station_name = None
+    session['search_station'] = None
+    for station in listStation:
+
+        arrayassign = []
+        i = 0
+        for key in station['location']:
+            arrayassign.append(station['location'][key])
+            i = i + 1
+        i = 0
+        oldX = 0
+        oldY = 0
+        for key in arrayassign:
+
+            if i != 0:
+                if (x >= oldX and y > oldY) and (x <= key[0] and y < key[1]):
+                    station_name = station['name']
+                    session['search_station'] = station_name
+
+            i = i + 1
+            oldX = key[0]
+            oldY = key[1]
+        responseBody = {"results": station_name}
+
+    return jsonify(responseBody), 200
 
 @blueprint.route('/add_station_config', methods=['POST'])
 def add_station_config():

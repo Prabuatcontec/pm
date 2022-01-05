@@ -2,7 +2,7 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-from flask import jsonify
+from flask import jsonify, session, make_response
 from apps.home import blueprint
 from flask import render_template, request, Response
 import requests
@@ -10,14 +10,15 @@ from flask_login import login_required
 from apps.report.models import motions
 from apps.camera.autoid import autoid
 from apps import db
-
-from datetime import datetime
+import csv
+from datetime import datetime, timedelta
 
 
 @blueprint.route('/report/box')
 @login_required
 def report_box():
-    stationTime = motions.actionin_box_area('box2')
+    stationBox = {"Line1Station": "box1", "Line2Station": "box2", "Line3Station": "box3","Line4Station": "box4"}
+    stationTime = motions.actionin_box_area(stationBox[session['search_station']])
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
@@ -42,13 +43,16 @@ def report_box():
                        "time_report_hrs": time_report_hrs}
 
     result = {'result': station_all_day}
+
     return jsonify(result), 200
 
 
 @blueprint.route('/report/shipping')
 @login_required
 def report_shipping():
-    stationTime = motions.actionin_shipping_data('CLD-SHIP16')
+    stationDis = {"Line1Station": "CLD-SHIP13", "Line2Station": "CLD-SHIP15","Line3Station": "CLD-SHIP16","Line4Station": "CLD-SHIP21"}
+
+    stationTime = motions.actionin_shipping_data(stationDis[session['search_station']])
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
@@ -121,9 +125,80 @@ def report_shipping():
                        "pretime": pretime,
                        "hrShippingCount": hrShippingCount}
 
+    session['time_report_count'] = time_report_count
+    session['hrShippingCount'] = hrShippingCount
+
     result = {'result': station_all_day}
     return jsonify(result), 200
 
+@blueprint.route('/report-csv')
+@login_required
+def report_csv():
+    now = datetime.now()
+
+    fields_csv = 'Date,0-1 Min,1-2 Min,2-3 Min,3-5 Min,5-10 Min,10-15 Min,15-60 Min\n'
+    rows = []
+    time_report_count_csv = session['time_report_count']
+
+    for x in range(7):
+        d = now - timedelta(days=x)
+
+        if d.strftime("%d-%m-%Y") not in time_report_count_csv:
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {"0-1": 0, "1-2": 0, "2-3": 0,
+                                                             "3-5": 0, "5-10": 0, "10-15": 0,
+                                                             "15-60": 0}
+        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]["0-1"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
+                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n';
+
+
+
+    response = make_response(fields_csv)
+    cd = 'attachment; filename=Shipment'+str(now)+'.csv'
+    response.headers['Content-Disposition'] = cd
+    response.mimetype = 'text/csv'
+
+    return response
+
+
+@blueprint.route('/report-csv-op-activity')
+@login_required
+def report_csv_op_activity():
+    now = datetime.now()
+
+    fields_csv = 'Date,0 Hr,1 Hr,2 Hr,3 Hr,4 Hr,5 Hr,6 Hr,7 Hr,8 Hr,9 Hr,10 Hr,11 Hr,12 Hr,13 Hr,14 Hr,15 Hr,16 Hr,17 Hr,18 Hr,' \
+                 '19 Hr,20 Hr,21 Hr,22 Hr,23 Hr\n'
+    rows = []
+    time_report_count_csv = session['time_report_count']
+
+    for x in range(7):
+        d = now - timedelta(days=x)
+
+        if d.strftime("%d-%m-%Y") not in time_report_count_csv:
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {0: 0, 1: 0, 2: 0,
+                                                             3: 0, 4: 0, 5: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             6: 0, 7: 0, 8: 0,}
+        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]["0-1"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
+                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n';
+
+
+
+    response = make_response(fields_csv)
+    cd = 'attachment; filename=Shipment'+str(now)+'.csv'
+    response.headers['Content-Disposition'] = cd
+    response.mimetype = 'text/csv'
+
+    return response
 
 @blueprint.route('/report')
 @login_required
@@ -162,7 +237,7 @@ def report():
     #             {'value': len(result) + int(upautoidlastValue)})
     #         db.session.commit()
 
-    stationTime = motions.motion_loader_byarea('Line2Station')
+    stationTime = motions.motion_loader_byarea(session['search_station'])
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
@@ -207,7 +282,7 @@ def report():
             time_report[dt_obj]["10-15"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
 
-        if 900 < station[5] <= 3600:
+        if 900 < station[5] <= 1000:
             p_time = time_report[dt_obj]["15-60"]
             time_report_count[dt_obj]["15-60"] = int(time_report_count[dt_obj]["15-60"]) + 1
             time_report[dt_obj]["15-60"] = (int(p_time) + station[5])

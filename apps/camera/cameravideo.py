@@ -5,18 +5,19 @@ import pickle
 import os
 import time, datetime, calendar
 from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
 from apps.report.models import motions
 
 
-class VideoCamera(object):
+
+
+
+class VideoDataCamera(object):
     def __init__(self):
         # capturing video rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1
         # "rtsp://admin:3J7Bm!j@@10.10.153.13/doc/page/preview.asp"
-        self.video = cv2.VideoCapture(
-            "rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
+        self.video = cv2.VideoCapture("rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
         ret, self.frame1 = self.video.read()
         ret, self.frame2 = self.video.read()
         self.frame1 = cv2.resize(self.frame1, (1100, 700), interpolation=cv2.INTER_AREA)
@@ -27,6 +28,7 @@ class VideoCamera(object):
     def __del__(self):
         # releasing camera
         self.video.release()
+
 
     def get_frame(self):
 
@@ -43,17 +45,16 @@ class VideoCamera(object):
             if cv2.contourArea(contour) < 50:
                 continue
             movementPoints.append([x, y])
-
             cv2.rectangle(self.frame1, (x, y), (x + w, y + h), (255, 255, 0), 2)
-            cv2.putText(self.frame1, "Status: {}".format('Movement'), (20, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                        1, (255, 0, 0), 3)
+
 
         listStation = self.get_station_config()
         for station in listStation:
 
+
             arrayassign = []
             i = 0
-            for key in station['location']:
+            for key  in  station['location']:
                 arrayassign.append(station['location'][key])
                 i = i + 1
             i = 0
@@ -62,19 +63,11 @@ class VideoCamera(object):
             for key in arrayassign:
 
                 if i != 0:
-
                     cv2.rectangle(self.frame1, (oldX, oldY),
-                                  (key[0], key[1]), (0, 255, 0),
-                                  thickness=1)
-
-                    for point in movementPoints:
-                        # clprint(station['name'])
-                        # print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
-                        if (point[0] >= oldX and point[1] > oldY) and (point[0] <= key[0] and point[1] < key[1]):
-                            self.motions.append({station['name']: time.time()})
-                            self.capture_motion(station['name'])
-                            # print(self.motions)
-
+                             (key[0], key[1]), (0, 255, 0),
+                             thickness=1)
+                    cv2.putText(self.frame1, station['name'], (oldX, oldY), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5, (255, 0, 0), 1)
                 i = i + 1
                 oldX = key[0]
                 oldY = key[1]
@@ -101,20 +94,9 @@ class VideoCamera(object):
             data = list()
         return data
 
-    def capture_motion(self, motion):
-        motion_added = self.motions
-
-        gmt = time.gmtime()
-        print("gmt:-", gmt)
-
-        # ts stores timestamp
-        ts = calendar.timegm(gmt)
-        if len(self.motions) > 0:
-            motions_add = motions(**{"area": str(motion), "timeadded": ts})
-            db.session.add(motions_add)
-            db.session.commit()
 
 
 def get_correct_path(relative_path):
     p = os.path.abspath(".").replace('/dist', "")
     return os.path.join(p, relative_path)
+
