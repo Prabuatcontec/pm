@@ -33,7 +33,7 @@
                 <i class="material-icons opacity-10">inbox</i>
               </div>
               <div class="text-end pt-1">
-                <p class="text-sm mb-0 text-capitalize">Yesterday Shipment</p>
+                <p class="text-sm mb-0 text-capitalize"><span id="yes_shipment">Yesterday</span> Shipment</p>
                 <h4 class="mb-0" id="yesterday_total">0</h4>
               </div>
             </div>
@@ -50,7 +50,7 @@
                 <i class="material-icons opacity-10">person</i>
               </div>
               <div class="text-end pt-1">
-                <p class="text-sm mb-0 text-capitalize">Today Inactive</p>
+                <p class="text-sm mb-0 text-capitalize"><span id="data-activity">Today</span> Inactive</p>
                 <h4 class="mb-0" id="inactive_today">0</h4>
               </div>
             </div>
@@ -90,8 +90,7 @@
             </div>
             <div class="card-body">
 
-              <h6 class="mb-0 ">Shipment<a href="/report-csv" target="_blank">
-                <i class="material-icons opacity-10"   >download</i></a>
+              <h6 class="mb-0 ">Shipment
               </h6>
               <p class="text-sm ">Shipment by date</p>
 
@@ -108,8 +107,7 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 "> Box Area Activity <a href="/report-csv" target="_blank">
-                <i class="material-icons opacity-10"   >download</i></h6>
+              <h6 class="mb-0 "> Box Area Activity </h6>
               <p class="text-sm ">Activity by date</p>
 
             </div>
@@ -129,7 +127,8 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Operator Activity</h6>
+              <h6 class="mb-0 ">Operator Activity <a href="/report-csv" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a></h6>
               <p class="text-sm ">Operator activity break by Min</p>
 
             </div>
@@ -165,7 +164,8 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Operator Shipping count</h6>
+              <h6 class="mb-0 ">Operator Shipping count <a href="/report-csv-op-activity" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a></h6>
               <p class="text-sm ">Operator Shipping Count Every Hour</p>
             </div>
           </div>
@@ -416,6 +416,7 @@ success: function(response) {
         if (so == 5)
         {
         yesterday = lab[so];
+
         }
         if (response['result']['time_report_count'][lab[so]] === undefined) {
             response['result']['time_report_count'][lab[so]] = {
@@ -446,13 +447,26 @@ success: function(response) {
         }
     }
 
-    $('#inactive_today').html(parseFloat( response['result']['time_report_hrs'][yesterday]['1-2'] +
-    response['result']['time_report_hrs'][yesterday]['2-3'] +
-    response['result']['time_report_hrs'][yesterday]['3-5'] +
-    response['result']['time_report_hrs'][yesterday]['5-10'] +
-    response['result']['time_report_hrs'][yesterday]['10-15'] +
-    response['result']['time_report_hrs'][yesterday]['15-60']).toFixed(2)
-    )
+    let weeklySum=[];
+    var removeLoop = 0;
+    for (so = 6; so >= 0; so--) {
+    var sumTotal = parseFloat( response['result']['time_report_hrs'][lab[so]]['1-2'] +
+    response['result']['time_report_hrs'][lab[so]]['2-3'] +
+    response['result']['time_report_hrs'][lab[so]]['3-5'] +
+    response['result']['time_report_hrs'][lab[so]]['5-10'] +
+    response['result']['time_report_hrs'][lab[so]]['10-15'] +
+    response['result']['time_report_hrs'][lab[so]]['15-60']);
+    weeklySum.push()
+      if (sumTotal>0 && removeLoop==0) {
+          removeLoop = 1;
+          if(so != 6) {
+          $('#data-activity').html( lab[so]);
+
+          }
+          $('#inactive_today').html(sumTotal.toFixed(2) );
+      }
+    }
+
 
     var dataset = [{
         label: "1-2",
@@ -1113,12 +1127,7 @@ var color = {0:'#ffffff',
               }
               var lb_hrs = {};
 
-              var weekTotal;
-              weekTotal = 0;
-              var yesterday_total;
-              yesterday_total = 0;
-              var high_volume;
-              high_volume = 0;
+
   for(x = 0; x <=23; x++) {
 
     lb_hrs[x] = x + 'hrs';
@@ -1135,15 +1144,36 @@ var color = {0:'#ffffff',
         cxp.data.datasets[x].data.push(timeIntervalCount[lab[xp]][x]);
         if (parseInt(timeIntervalCount[lab[xp]][x])>0) {
         $('#hr-t-body').append('<tr><td><div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">'+lab[xp]+' '+x+':00:00</h6></div></div></td><td><p class="text-xs font-weight-bold mb-0">'+timeIntervalCount[lab[xp]][x]+'</p></td></tr>');
-        weekTotal = timeIntervalCount[lab[xp]][x] + weekTotal;
-        if (xp == 5) {
-        yesterday_total = timeIntervalCount[lab[xp]][x] + yesterday_total;
-          if (high_volume <  timeIntervalCount[lab[xp]][x]) {
-              high_volume = timeIntervalCount[lab[xp]][x];
-          }
-        }
         }
        }
+      }
+
+
+      var weekTotal;
+      weekTotal = 0;
+      var yesterday_total;
+      yesterday_total = 0;
+      var high_volume;
+      high_volume = 0;
+      removeLoop = 0;
+      for(xp = 6; xp >=0; xp--) {
+      if (yesterday_total>0 && removeLoop==0) {
+      removeLoop = 1
+      }
+      for(x = 0; x <=23; x++) {
+          console.log(xp);
+
+          weekTotal = timeIntervalCount[lab[xp]][x] + weekTotal;
+          console.log(yesterday_total);
+          if(removeLoop == 0) {
+          if (xp !=5){ $('#yes_shipment').html(lab[xp]); }
+          yesterday_total = timeIntervalCount[lab[xp]][x] + yesterday_total;
+          if (high_volume <  timeIntervalCount[lab[xp]][x]) {
+              high_volume = timeIntervalCount[lab[xp]][x];
+
+          }
+          }
+        }
       }
 
       $('#week_shipment').html(weekTotal);

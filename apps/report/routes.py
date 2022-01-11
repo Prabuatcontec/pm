@@ -125,7 +125,7 @@ def report_shipping():
                        "pretime": pretime,
                        "hrShippingCount": hrShippingCount}
 
-    session['time_report_count'] = time_report_count
+
     session['hrShippingCount'] = hrShippingCount
 
     result = {'result': station_all_day}
@@ -136,22 +136,45 @@ def report_shipping():
 def report_csv():
     now = datetime.now()
 
-    fields_csv = 'Date,0-1 Min,1-2 Min,2-3 Min,3-5 Min,5-10 Min,10-15 Min,15-60 Min\n'
-    rows = []
+    fields_csv = 'Date, 1-2 Min,2-3 Min,3-5 Min,5-10 Min,10-15 Min,15-60 Min\n'
+    rows = ["1-2", "2-3", "3-5", "5-10", "10-15", "15-60"]
     time_report_count_csv = session['time_report_count']
-
+    #print(time_report_count_csv)
     for x in range(7):
         d = now - timedelta(days=x)
 
         if d.strftime("%d-%m-%Y") not in time_report_count_csv:
-            time_report_count_csv[d.strftime("%d-%m-%Y")] = {"0-1": 0, "1-2": 0, "2-3": 0,
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {  "1-2": 0, "2-3": 0,
                                                              "3-5": 0, "5-10": 0, "10-15": 0,
                                                              "15-60": 0}
-        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]["0-1"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
+        for i, val in enumerate(rows):
+            if val not in time_report_count_csv[d.strftime("%d-%m-%Y")]:
+                time_report_count_csv[d.strftime("%d-%m-%Y")][val] = 0
+
+        fields_csv += d.strftime("%d-%m-%Y")+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
                       +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
                       str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
                       str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n';
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n\n\n';
+
+        time_report_time = session['time_report_time']
+
+    for x in range(7):
+        d = now - timedelta(days=x)
+        if d.strftime("%d-%m-%Y") not in time_report_time:
+            time_report_time[d.strftime("%d-%m-%Y")] = {  "1-2": [], "2-3": [],
+                                                             "3-5": [], "5-10": [], "10-15": [],
+                                                             "15-60": []}
+
+
+        for i, val in enumerate(rows):
+            if val not in time_report_time[d.strftime("%d-%m-%Y")]:
+                time_report_time[d.strftime("%d-%m-%Y")][val] = []
+        for o,data  in enumerate(rows):
+            fields_csv += '\n'+d.strftime("%d-%m-%Y") + '\n'
+            for i, val in enumerate(time_report_time[d.strftime("%d-%m-%Y")][data]):
+                fields_csv += str(val["from"]) + "," + str(val["to"]) + ",,"
+
 
 
 
@@ -171,30 +194,50 @@ def report_csv_op_activity():
     fields_csv = 'Date,0 Hr,1 Hr,2 Hr,3 Hr,4 Hr,5 Hr,6 Hr,7 Hr,8 Hr,9 Hr,10 Hr,11 Hr,12 Hr,13 Hr,14 Hr,15 Hr,16 Hr,17 Hr,18 Hr,' \
                  '19 Hr,20 Hr,21 Hr,22 Hr,23 Hr\n'
     rows = []
-    time_report_count_csv = session['time_report_count']
+    time_report_count_csv = session['hrShippingCount']
 
     for x in range(7):
         d = now - timedelta(days=x)
 
         if d.strftime("%d-%m-%Y") not in time_report_count_csv:
-            time_report_count_csv[d.strftime("%d-%m-%Y")] = {0: 0, 1: 0, 2: 0,
-                                                             3: 0, 4: 0, 5: 0,
-                                                             6: 0, 7: 0, 8: 0,
-                                                             6: 0, 7: 0, 8: 0,
-                                                             6: 0, 7: 0, 8: 0,
-                                                             6: 0, 7: 0, 8: 0,
-                                                             6: 0, 7: 0, 8: 0,
-                                                             6: 0, 7: 0, 8: 0,}
-        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]["0-1"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
-                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n';
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {'0': 0, '1': 0, '2': 0,
+                                                             '3': 0, '4': 0, '5': 0,
+                                                             '6': 0, '7': 0, '8': 0,
+                                                             '9': 0, '10': 0, '11': 0,
+                                                             '12': 0, '13': 0, '14': 0,
+                                                             '15': 0, '16': 0, '17': 0,
+                                                             '18': 0, '19': 0, '20': 0,
+                                                             '21': 0, '22': 0, '23': 0}
+
+        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]['0'])+','\
+                      +str(time_report_count_csv[d.strftime("%d-%m-%Y")]['1'])+','\
+                      +str(time_report_count_csv[d.strftime("%d-%m-%Y")]['2'])\
+                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]['3'])+',' +\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['4'])+',' +\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['5'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['6'])+',' +\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['7'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['8'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['9'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['10'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['11'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['12'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['13'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['14'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['15'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['16'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['17'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['18'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['19'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['20'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['21'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['22'])+','+\
+                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['23'])+'\n';
 
 
 
     response = make_response(fields_csv)
-    cd = 'attachment; filename=Shipment'+str(now)+'.csv'
+    cd = 'attachment; filename=Operator_shipment_hours_'+str(now)+'.csv'
     response.headers['Content-Disposition'] = cd
     response.mimetype = 'text/csv'
 
@@ -203,53 +246,23 @@ def report_csv_op_activity():
 @blueprint.route('/report')
 @login_required
 def report():
-    autoids = autoid().request_loader()
-    # if autoids != None:
-    #     upautoidlastValue = autoids.value #33966071
-    # response = requests.get('https://deepbluapi.gocontec.com/autoreceive/direct-shipments?_format=json&model=NVG448B&date=2021-12-20&s_time=16:17:00&e_time=18:17:00',
-    #                         headers={'Content-Type': 'application/json',
-    #                                  'Authorization': 'Basic QVVUT1JFQ0VJVkU6YXV0b0AxMjM='}
-    #                         )
-    # if response.status_code == 200:
-    #     print("resp")
-    #     print(response.content.decode("utf-8"))
-    #     print("=========")
-    #
-    #     if (response.content.decode("utf-8") != ""):
-    #         print("=========DDDDDD")
-    #         result = response.json()
-    #         print(result)
-    #         for value in result:
-    #             print('IN')
-    #             values = {"scantime": value["Scan Timestamp"],
-    #                       "station": value["Work Station ID"],
-    #                       "operator": value["Operator ID"],
-    #                       "product": value["Product ID"],
-    #                       "eventtype": value["Event Type"],
-    #                       "shipid": value["Shipment ID"],
-    #                       "errorcode": value["Error Code"],
-    #                       "errormessage": value["Error Message"]}
-    #             #motions.add_data(values)
-    #
-    #
-    #
-    #         db.session.query(autoid).filter(autoid.id == autoids.id).update(
-    #             {'value': len(result) + int(upautoidlastValue)})
-    #         db.session.commit()
 
     stationTime = motions.motion_loader_byarea(session['search_station'])
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
+    time_report_time = {}
     pretime = {}
 
     station_all_day = {}
     for station in stationTime:
+
         dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
         if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report_hrs[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+            time_report_time[dt_obj] = {"1-2": [], "2-3": [], "3-5": [], "5-10": [], "10-15": [], "15-60": []}
             pretime[dt_obj] = 0
         if pretime[dt_obj] < int(station[0]) or pretime[dt_obj] == 0:
             pretime[dt_obj] = int(station[0])
@@ -258,40 +271,55 @@ def report():
             time_report_count[dt_obj]["1-2"] = int(time_report_count[dt_obj]["1-2"]) + 1
             time_report[dt_obj]["1-2"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["1-2"] = convert_time((int(p_time) + station[5]))
+            time_report_time[dt_obj]["1-2"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
         if 120 < station[5] <= 180:
             p_time = time_report[dt_obj]["2-3"]
             time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
             time_report[dt_obj]["2-3"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + station[5]))
-
+            time_report_time[dt_obj]["2-3"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
         if 180 < station[5] <= 300:
             p_time = time_report[dt_obj]["3-5"]
             time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
             time_report[dt_obj]["3-5"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + station[5]))
+            time_report_time[dt_obj]["3-5"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
 
         if 300 < station[5] <= 600:
             p_time = time_report[dt_obj]["5-10"]
             time_report_count[dt_obj]["5-10"] = int(time_report_count[dt_obj]["5-10"]) + 1
             time_report[dt_obj]["5-10"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
+            time_report_time[dt_obj]["5-10"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
 
         if 600 < station[5] <= 900:
             p_time = time_report[dt_obj]["10-15"]
             time_report_count[dt_obj]["10-15"] = int(time_report_count[dt_obj]["10-15"]) + 1
             time_report[dt_obj]["10-15"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
+            time_report_time[dt_obj]["10-15"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
 
         if 900 < station[5] <= 1000:
             p_time = time_report[dt_obj]["15-60"]
             time_report_count[dt_obj]["15-60"] = int(time_report_count[dt_obj]["15-60"]) + 1
             time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
+            time_report_time[dt_obj]["15-60"].append({"from": datetime.fromtimestamp(int(station[0])),
+                                                    "to": datetime.fromtimestamp(int(station[4]))})
 
+    #print(time_report_time)
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
                        "time_report_hrs": time_report_hrs, "pretime": pretime}
 
     result = {'result': station_all_day}
+
+    session['time_report_count'] = time_report_hrs
+    session['time_report_time'] = time_report_time
     return jsonify(result), 200
 
 
