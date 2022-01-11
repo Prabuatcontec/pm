@@ -17,3 +17,4 @@ flask-restx==0.5.1
 # translation
 # defisheye
 # matplotlib
+#pip install openpyxl

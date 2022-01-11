@@ -2,16 +2,15 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-from flask import jsonify, session, make_response
+from flask import jsonify, session, make_response, Response
 from apps.home import blueprint
-from flask import render_template, request, Response
-import requests
+
 from flask_login import login_required
 from apps.report.models import motions
-from apps.camera.autoid import autoid
-from apps import db
-import csv
+
 from datetime import datetime, timedelta
+import openpyxl, os
+from openpyxl.styles import Color, PatternFill, Font, Border
 
 
 @blueprint.route('/report/box')
@@ -139,6 +138,9 @@ def report_csv():
     fields_csv = 'Date, 1-2 Min,2-3 Min,3-5 Min,5-10 Min,10-15 Min,15-60 Min\n'
     rows = ["1-2", "2-3", "3-5", "5-10", "10-15", "15-60"]
     time_report_count_csv = session['time_report_count']
+
+    data = [["Operator Activity"]]
+    data.append(["Date", "1-2 Min", "2-3 Min", "3-5 Min", "5-10 Min", "10-15 Min", "15-60 Min"])
     #print(time_report_count_csv)
     for x in range(7):
         d = now - timedelta(days=x)
@@ -150,7 +152,14 @@ def report_csv():
         for i, val in enumerate(rows):
             if val not in time_report_count_csv[d.strftime("%d-%m-%Y")]:
                 time_report_count_csv[d.strftime("%d-%m-%Y")][val] = 0
+        dataAdd = [d.strftime("%d-%m-%Y"), str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])]
 
+        data.append(dataAdd)
         fields_csv += d.strftime("%d-%m-%Y")+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
                       +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
                       str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
@@ -158,7 +167,12 @@ def report_csv():
                       str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n\n\n';
 
         time_report_time = session['time_report_time']
-
+    data.append([])
+    data.append([])
+    data.append(["Operator Activity (From - To)"])
+    lo_arr = []
+    lo_arr_in = []
+    vo = 13
     for x in range(7):
         d = now - timedelta(days=x)
         if d.strftime("%d-%m-%Y") not in time_report_time:
@@ -170,14 +184,75 @@ def report_csv():
         for i, val in enumerate(rows):
             if val not in time_report_time[d.strftime("%d-%m-%Y")]:
                 time_report_time[d.strftime("%d-%m-%Y")][val] = []
-        for o,data  in enumerate(rows):
+        lo_arr.append(vo)
+
+
+        data.append([d.strftime("%d-%m-%Y")])
+        vo = vo + 1
+        for o,datapop  in enumerate(rows):
             fields_csv += '\n'+d.strftime("%d-%m-%Y") + '\n'
-            for i, val in enumerate(time_report_time[d.strftime("%d-%m-%Y")][data]):
+            data.append([datapop])
+            lo_arr_in.append(vo)
+            vo = vo + 1
+            for i, val in enumerate(time_report_time[d.strftime("%d-%m-%Y")][datapop]):
+
                 fields_csv += str(val["from"]) + "," + str(val["to"]) + ",,"
+                data.append([str(val["from"]) + " - " + str(val["to"])])
+                vo = vo + 1
+            data.append([])
+            vo = vo + 1
 
 
+    fname2 = r'Shipment'+'_'+session['_user_id']+'.xlsx'
+    workbook = openpyxl.Workbook(fname2)
+    if os.path.isfile(fname2):
+        print('old file')
+    else:
+        print('new file')
+        workbook2 = openpyxl.Workbook(fname2)
+        workbook2.save(fname2)
+    wb = openpyxl.load_workbook(fname2)
+    ws = wb.active
+
+    sheet = wb.active
 
 
+    for row in data:
+        sheet.append(row)
+    redFill = PatternFill(start_color='FFFF00',
+                          end_color='FFFF99',
+                          fill_type='solid' )
+
+    redFill_in = PatternFill(start_color='A9A9A9',
+                          end_color='E8E8E8',
+                          fill_type='solid')
+
+
+    for cell in ws["2:2"]:
+        cell.fill = redFill
+        cell.font = Font(size="14", color='484848')
+    for p, pon in enumerate(lo_arr):
+        for cell in ws[str(pon)+":"+str(pon)]:
+            cell.fill = redFill
+            cell.font = Font(size="14", color='484848')
+    for p, pon in enumerate(lo_arr_in):
+        for cell in ws[str(pon)+":"+str(pon)]:
+            cell.fill = redFill_in
+            cell.font = Font(size="14", color='FFFFFF')
+#A9A9A9
+    fontStyle = Font(size="20", color='484848')
+    ws['A1'].font = fontStyle
+
+    ws['A12'].font = fontStyle
+
+    wb.save(fname2)
+    excelDownload = open(fname2, 'rb').read()
+    os.remove(fname2)
+    return Response(
+        excelDownload,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-disposition":
+                     "attachment; filename="+fname2})
     response = make_response(fields_csv)
     cd = 'attachment; filename=Shipment'+str(now)+'.csv'
     response.headers['Content-Disposition'] = cd
