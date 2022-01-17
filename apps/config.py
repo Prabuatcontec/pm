@@ -19,7 +19,7 @@ class Config(object):
         config('DB_ENGINE', default='postgresql'),
         config('DB_USERNAME', default='postgres'),
         config('DB_PASS', default='Contec123'),
-        config('DB_HOST', default='localhost'),
+        config('DB_HOST', default='10.10.81.81'),
         config('DB_PORT', default=5432),
         config('DB_NAME', default='postgres')
     )
@@ -38,7 +38,7 @@ class ProductionConfig(Config):
         config('DB_ENGINE', default='postgresql'),
         config('DB_USERNAME', default='postgres'),
         config('DB_PASS', default='Contec123'),
-        config('DB_HOST', default='localhost'),
+        config('DB_HOST', default='10.10.81.81'),
         config('DB_PORT', default=5432),
         config('DB_NAME', default='postgres')
     )

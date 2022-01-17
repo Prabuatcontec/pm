@@ -90,7 +90,8 @@
             </div>
             <div class="card-body">
 
-              <h6 class="mb-0 ">Shipment
+              <h6 class="mb-0 ">Shipment<a href="/report-shipping" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a>
               </h6>
               <p class="text-sm ">Shipment by date</p>
 
@@ -181,7 +182,7 @@
             </div>
             <div class="card-body">
               <h6 class="mb-0 ">EOL Hrs</h6>
-
+              <p class="text-sm ">EOL every hours</p>
             </div>
           </div>
         </div>
@@ -194,7 +195,8 @@
         <div class="card my-4">
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-              <h6 class="text-white text-capitalize ps-3">Product Processed By Hour</h6>
+              <h6 class="text-white text-capitalize ps-3">Product Processed By Hour <a href="/report-summary-shipping" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a></h6>
             </div>
           </div>
           <div class="card-body px-0 pb-2">
@@ -225,6 +227,7 @@
 
   <script src="/static/assets/js/plugins/chartjs.min.js"></script>
   <script>
+
    $(document).ready(function () {
 
 
@@ -1220,6 +1223,10 @@ for (x = 0 ;x <= 23; x++) {
     plugins: {
       legend: {
         position: false,
+        title: {
+                display: true,
+                text: 'Custom Chart Title'
+            }
       },
 
     }

@@ -9,8 +9,10 @@ from flask_login import login_required
 from apps.report.models import motions
 
 from datetime import datetime, timedelta
+import time, calendar
 import openpyxl, os
 from openpyxl.styles import Color, PatternFill, Font, Border
+import pickle
 
 
 @blueprint.route('/report/box')
@@ -21,10 +23,7 @@ def report_box():
     time_report_count = {}
     time_report = {}
     time_report_hrs = {}
-    # "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0
-    totalAway = 0
 
-    station_all_day = {}
     for station in stationTime:
         dt_obj = datetime.fromtimestamp(station[0]).strftime('%d-%m-%Y')
         if dt_obj not in time_report_count:
@@ -124,9 +123,8 @@ def report_shipping():
                        "pretime": pretime,
                        "hrShippingCount": hrShippingCount}
 
-
-    session['hrShippingCount'] = hrShippingCount
-
+    pickle.dump(time_report_hrs, open(get_correct_path(session['search_station'] + "_hr_Shipping.p"), "wb"))
+    pickle.dump(hrShippingCount, open(get_correct_path(session['search_station'] + "_hrShippingCount.p"), "wb"))
     result = {'result': station_all_day}
     return jsonify(result), 200
 
@@ -135,9 +133,8 @@ def report_shipping():
 def report_csv():
     now = datetime.now()
 
-    fields_csv = 'Date, 1-2 Min,2-3 Min,3-5 Min,5-10 Min,10-15 Min,15-60 Min\n'
     rows = ["1-2", "2-3", "3-5", "5-10", "10-15", "15-60"]
-    time_report_count_csv = session['time_report_count']
+    time_report_count_csv = get_station_data(session['search_station'] + "_data_count.p")
 
     data = [["Operator Activity"]]
     data.append(["Date", "1-2 Min", "2-3 Min", "3-5 Min", "5-10 Min", "10-15 Min", "15-60 Min"])
@@ -160,13 +157,9 @@ def report_csv():
                    str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])]
 
         data.append(dataAdd)
-        fields_csv += d.strftime("%d-%m-%Y")+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"])+','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"])\
-                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])+'\n\n\n';
 
-        time_report_time = session['time_report_time']
+
+    time_report_time = get_station_data(session['search_station']+"_data.p")
     data.append([])
     data.append([])
     data.append(["Operator Activity (From - To)"])
@@ -176,9 +169,9 @@ def report_csv():
     for x in range(7):
         d = now - timedelta(days=x)
         if d.strftime("%d-%m-%Y") not in time_report_time:
-            time_report_time[d.strftime("%d-%m-%Y")] = {  "1-2": [], "2-3": [],
-                                                             "3-5": [], "5-10": [], "10-15": [],
-                                                             "15-60": []}
+            time_report_time[d.strftime("%d-%m-%Y")] = {"1-2": [], "2-3": [],
+                                                         "3-5": [], "5-10": [], "10-15": [],
+                                                         "15-60": []}
 
 
         for i, val in enumerate(rows):
@@ -190,20 +183,17 @@ def report_csv():
         data.append([d.strftime("%d-%m-%Y")])
         vo = vo + 1
         for o,datapop  in enumerate(rows):
-            fields_csv += '\n'+d.strftime("%d-%m-%Y") + '\n'
-            data.append([datapop])
+            data.append([datapop +' Min'])
             lo_arr_in.append(vo)
             vo = vo + 1
             for i, val in enumerate(time_report_time[d.strftime("%d-%m-%Y")][datapop]):
-
-                fields_csv += str(val["from"]) + "," + str(val["to"]) + ",,"
-                data.append([str(val["from"]) + " - " + str(val["to"])])
+                data.append([str(val["from"]) + " - " + str(val["to"]), str(val["diff"])])
                 vo = vo + 1
             data.append([])
             vo = vo + 1
 
 
-    fname2 = r'Shipment'+'_'+session['_user_id']+'.xlsx'
+    fname2 = r'Operator_Activity'+'_'+session['_user_id']+'.xlsx'
     workbook = openpyxl.Workbook(fname2)
     if os.path.isfile(fname2):
         print('old file')
@@ -239,7 +229,7 @@ def report_csv():
         for cell in ws[str(pon)+":"+str(pon)]:
             cell.fill = redFill_in
             cell.font = Font(size="14", color='FFFFFF')
-#A9A9A9
+
     fontStyle = Font(size="20", color='484848')
     ws['A1'].font = fontStyle
 
@@ -253,12 +243,125 @@ def report_csv():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-disposition":
                      "attachment; filename="+fname2})
-    response = make_response(fields_csv)
-    cd = 'attachment; filename=Shipment'+str(now)+'.csv'
-    response.headers['Content-Disposition'] = cd
-    response.mimetype = 'text/csv'
 
-    return response
+
+@blueprint.route('/report-shipping')
+@login_required
+def report_shipping_hr():
+    now = datetime.now()
+
+    rows = ["0-1", "1-2", "2-3", "3-5", "5-10", "10-15", "15-60"]
+    time_report_count_csv = get_station_data(session['search_station'] + "_hr_Shipping.p")
+
+    data = [["Shipping Activity"]]
+    data.append(["Date", "0-1 Min", "1-2 Min", "2-3 Min", "3-5 Min", "5-10 Min", "10-15 Min", "15-60 Min"])
+    #print(time_report_count_csv)
+    for x in range(7):
+        d = now - timedelta(days=x)
+
+        if d.strftime("%d-%m-%Y") not in time_report_count_csv:
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {"0-1": 0, "1-2": 0, "2-3": 0,
+                                                             "3-5": 0, "5-10": 0, "10-15": 0,
+                                                             "15-60": 0}
+        for i, val in enumerate(rows):
+            if val not in time_report_count_csv[d.strftime("%d-%m-%Y")]:
+                time_report_count_csv[d.strftime("%d-%m-%Y")][val] = 0
+        dataAdd = [d.strftime("%d-%m-%Y"), str(time_report_count_csv[d.strftime("%d-%m-%Y")]["0-1"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["1-2"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["2-3"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["3-5"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["5-10"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["10-15"]),
+                   str(time_report_count_csv[d.strftime("%d-%m-%Y")]["15-60"])]
+
+        data.append(dataAdd)
+
+
+    time_report_time = get_station_data(session['search_station']+"_data.p")
+    data.append([])
+    data.append([])
+    #data.append(["Operator Activity (From - To)"])
+    lo_arr = []
+    lo_arr_in = []
+    # vo = 13
+    # for x in range(7):
+    #     d = now - timedelta(days=x)
+    #     if d.strftime("%d-%m-%Y") not in time_report_time:
+    #         time_report_time[d.strftime("%d-%m-%Y")] = {"1-2": [], "2-3": [],
+    #                                                      "3-5": [], "5-10": [], "10-15": [],
+    #                                                      "15-60": []}
+    #
+    #
+    #     for i, val in enumerate(rows):
+    #         if val not in time_report_time[d.strftime("%d-%m-%Y")]:
+    #             time_report_time[d.strftime("%d-%m-%Y")][val] = []
+    #     lo_arr.append(vo)
+    #
+    #
+    #     data.append([d.strftime("%d-%m-%Y")])
+    #     vo = vo + 1
+    #     for o,datapop  in enumerate(rows):
+    #         data.append([datapop +' Min'])
+    #         lo_arr_in.append(vo)
+    #         vo = vo + 1
+    #         for i, val in enumerate(time_report_time[d.strftime("%d-%m-%Y")][datapop]):
+    #             data.append([str(val["from"]) + " - " + str(val["to"]), str(val["diff"])])
+    #             vo = vo + 1
+    #         data.append([])
+    #         vo = vo + 1
+
+
+    fname2 = r'Shipping_Hrs'+'_'+session['_user_id']+'.xlsx'
+    workbook = openpyxl.Workbook(fname2)
+    if os.path.isfile(fname2):
+        print('old file')
+    else:
+        print('new file')
+        workbook2 = openpyxl.Workbook(fname2)
+        workbook2.save(fname2)
+    wb = openpyxl.load_workbook(fname2)
+    ws = wb.active
+
+    sheet = wb.active
+
+
+    for row in data:
+        sheet.append(row)
+    redFill = PatternFill(start_color='FFFF00',
+                          end_color='FFFF99',
+                          fill_type='solid' )
+
+    redFill_in = PatternFill(start_color='A9A9A9',
+                          end_color='E8E8E8',
+                          fill_type='solid')
+
+
+    for cell in ws["2:2"]:
+        cell.fill = redFill
+        cell.font = Font(size="14", color='484848')
+    for p, pon in enumerate(lo_arr):
+        for cell in ws[str(pon)+":"+str(pon)]:
+            cell.fill = redFill
+            cell.font = Font(size="14", color='484848')
+    for p, pon in enumerate(lo_arr_in):
+        for cell in ws[str(pon)+":"+str(pon)]:
+            cell.fill = redFill_in
+            cell.font = Font(size="14", color='FFFFFF')
+
+    fontStyle = Font(size="20", color='484848')
+    ws['A1'].font = fontStyle
+
+    ws['A12'].font = fontStyle
+
+    wb.save(fname2)
+    excelDownload = open(fname2, 'rb').read()
+    os.remove(fname2)
+    return Response(
+        excelDownload,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-disposition":
+                     "attachment; filename="+fname2})
+
 
 
 @blueprint.route('/report-csv-op-activity')
@@ -266,57 +369,98 @@ def report_csv():
 def report_csv_op_activity():
     now = datetime.now()
 
-    fields_csv = 'Date,0 Hr,1 Hr,2 Hr,3 Hr,4 Hr,5 Hr,6 Hr,7 Hr,8 Hr,9 Hr,10 Hr,11 Hr,12 Hr,13 Hr,14 Hr,15 Hr,16 Hr,17 Hr,18 Hr,' \
-                 '19 Hr,20 Hr,21 Hr,22 Hr,23 Hr\n'
-    rows = []
-    time_report_count_csv = session['hrShippingCount']
 
+    rows = ["Date", "0 Hr", "1 Hr", "2 Hr", "3 Hr", "4 Hr", "5 Hr", "6 Hr", "7 Hr", "8 Hr", "9 Hr", "10 Hr", "11 Hr"
+            , "12 Hr", "13 Hr", "14 Hr", "15 Hr", "16 Hr", "17 Hr", "18 Hr", "19 Hr", "20 Hr", "21 Hr", "22 Hr",
+            "23 Hr"]
+    time_report_count_csv = get_station_data(session['search_station'] + "_hrShippingCount.p")
+    print(time_report_count_csv)
+    data = []
+    data.append(["Shipping hourly report"])
+    data.append(rows)
     for x in range(7):
         d = now - timedelta(days=x)
-
+        print(d.strftime("%d-%m-%Y"))
         if d.strftime("%d-%m-%Y") not in time_report_count_csv:
-            time_report_count_csv[d.strftime("%d-%m-%Y")] = {'0': 0, '1': 0, '2': 0,
-                                                             '3': 0, '4': 0, '5': 0,
-                                                             '6': 0, '7': 0, '8': 0,
-                                                             '9': 0, '10': 0, '11': 0,
-                                                             '12': 0, '13': 0, '14': 0,
-                                                             '15': 0, '16': 0, '17': 0,
-                                                             '18': 0, '19': 0, '20': 0,
-                                                             '21': 0, '22': 0, '23': 0}
+            time_report_count_csv[d.strftime("%d-%m-%Y")] = {0: 0, 1: 0, 2: 0,
+                                                             3: 0, 4: 0, 5: 0,
+                                                             6: 0, 7: 0, 8: 0,
+                                                             9: 0, 10: 0, 11: 0,
+                                                             12: 0, 13: 0, 14: 0,
+                                                             15: 0, 16: 0, 17: 0,
+                                                             18: 0, 19: 0, 20: 0,
+                                                             21: 0,22: 0, 23: 0}
+        for i in range(24):
+            if i not in time_report_count_csv[d.strftime("%d-%m-%Y")]:
+                time_report_count_csv[d.strftime("%d-%m-%Y")][i] = 0
 
-        fields_csv += d.strftime("%d-%m-%Y")+','+ str(time_report_count_csv[d.strftime("%d-%m-%Y")]['0'])+','\
-                      +str(time_report_count_csv[d.strftime("%d-%m-%Y")]['1'])+','\
-                      +str(time_report_count_csv[d.strftime("%d-%m-%Y")]['2'])\
-                      +','+str(time_report_count_csv[d.strftime("%d-%m-%Y")]['3'])+',' +\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['4'])+',' +\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['5'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['6'])+',' +\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['7'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['8'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['9'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['10'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['11'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['12'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['13'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['14'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['15'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['16'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['17'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['18'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['19'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['20'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['21'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['22'])+','+\
-                      str(time_report_count_csv[d.strftime("%d-%m-%Y")]['23'])+'\n';
+        data.append([d.strftime("%d-%m-%Y"),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][0]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][1]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][2]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][3]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][4]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][5]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][6]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][7]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][8]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][9]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][10]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][11]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][12]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][13]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][14]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][15]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][16]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][17]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][18]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][19]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][20]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][21]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][22]),
+                     str(time_report_count_csv[d.strftime("%d-%m-%Y")][23])])
 
 
+    fname2 = r'Operator_Activity' + '_' + session['_user_id'] + '.xlsx'
+    workbook = openpyxl.Workbook(fname2)
+    if os.path.isfile(fname2):
+        print('old file')
+    else:
+        print('new file')
+        workbook2 = openpyxl.Workbook(fname2)
+        workbook2.save(fname2)
+    wb = openpyxl.load_workbook(fname2)
+    ws = wb.active
 
-    response = make_response(fields_csv)
-    cd = 'attachment; filename=Operator_shipment_hours_'+str(now)+'.csv'
-    response.headers['Content-Disposition'] = cd
-    response.mimetype = 'text/csv'
+    sheet = wb.active
+    for row in data:
+        sheet.append(row)
 
-    return response
+    redFill = PatternFill(start_color='FFFF00',
+                          end_color='FFFF99',
+                          fill_type='solid')
+
+    redFill_in = PatternFill(start_color='A9A9A9',
+                             end_color='E8E8E8',
+                             fill_type='solid')
+
+    for cell in ws["2:2"]:
+        cell.fill = redFill
+        cell.font = Font(size="14", color='484848')
+    fontStyle = Font(size="20", color='484848')
+    ws['A1'].font = fontStyle
+
+    ws['A12'].font = fontStyle
+
+    wb.save(fname2)
+    excelDownload = open(fname2, 'rb').read()
+    os.remove(fname2)
+    return Response(
+        excelDownload,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-disposition":
+                     "attachment; filename=" + fname2})
+
 
 @blueprint.route('/report')
 @login_required
@@ -347,21 +491,24 @@ def report():
             time_report[dt_obj]["1-2"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["1-2"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["1-2"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
         if 120 < station[5] <= 180:
             p_time = time_report[dt_obj]["2-3"]
             time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
             time_report[dt_obj]["2-3"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["2-3"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
         if 180 < station[5] <= 300:
             p_time = time_report[dt_obj]["3-5"]
             time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
             time_report[dt_obj]["3-5"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["3-5"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
 
         if 300 < station[5] <= 600:
             p_time = time_report[dt_obj]["5-10"]
@@ -369,7 +516,8 @@ def report():
             time_report[dt_obj]["5-10"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["5-10"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
 
         if 600 < station[5] <= 900:
             p_time = time_report[dt_obj]["10-15"]
@@ -377,7 +525,8 @@ def report():
             time_report[dt_obj]["10-15"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["10-15"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
 
         if 900 < station[5] <= 1000:
             p_time = time_report[dt_obj]["15-60"]
@@ -385,7 +534,8 @@ def report():
             time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
             time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
             time_report_time[dt_obj]["15-60"].append({"from": datetime.fromtimestamp(int(station[0])),
-                                                    "to": datetime.fromtimestamp(int(station[4]))})
+                                                    "to": datetime.fromtimestamp(int(station[4])),
+                                                    "diff": int(station[5])})
 
     #print(time_report_time)
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
@@ -393,10 +543,21 @@ def report():
 
     result = {'result': station_all_day}
 
-    session['time_report_count'] = time_report_hrs
-    session['time_report_time'] = time_report_time
+
+    pickle.dump(time_report_time, open(get_correct_path(session['search_station']+"_data.p"), "wb"))
+    pickle.dump(time_report_count, open(get_correct_path(session['search_station'] + "_data_count.p"), "wb"))
     return jsonify(result), 200
 
+def get_station_data(name):
+    try:
+        data = pickle.load(open(get_correct_path(name), "rb"))
+    except EOFError:
+        data = list()
+    return data
+
+def get_correct_path(relative_path):
+    p = os.path.abspath(".").replace('/dist', "")
+    return os.path.join(p, relative_path)
 
 def convert_time(seconds):
     return seconds / 60
