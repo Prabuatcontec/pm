@@ -50,5 +50,6 @@ class directshipping(db.Model):
         return stations if stations else None
 
     def add_data(values):
-        qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+str(values['station']+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"','"+values['siteid']+"') ")
+        qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+str(values['station'])+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"','"+str(values['siteid'])+"') ")
         db.session.execute(qry)
+        db.session.remove()

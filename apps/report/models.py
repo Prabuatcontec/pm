@@ -44,6 +44,7 @@ class motions(db.Model):
     def motion_loader(request):
         station = request.form.get('station')
         stations = motions.query.filter_by(station=station).first()
+        db.session.remove()
         return stations if stations else None
 
     def motion_loader_byarea(area):
@@ -62,6 +63,7 @@ class motions(db.Model):
                     "and timestamp_diff > 60) order by timestamp_diff desc")
 
         stations = db.session.execute(qrl)
+        db.session.remove()
         return stations if stations else None
 
     def actionin_box_area(area):
@@ -77,16 +79,18 @@ class motions(db.Model):
                 "AND  (to_timestamp(timeadded) AT TIME ZONE 'PST') >= current_date - 7 order by timeadded ) "
                 "t where  (timestamp_diff > 0 and timestamp_diff < 30) order by cid  desc; ")
         box_cnt = db.session.execute(qry)
+        db.session.remove()
         return box_cnt if box_cnt else None
 
     def add_data(values):
         qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,"
                "shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+values['station']+"',"
                 "'"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"'"
-                ",'"+values['errorcode']+"','"+values['errormessage']+"','"+values['siteid']+"') ")
+                ",'"+values['errorcode']+"','"+values['errormessage']+"','"+str(values['siteid'])+"') ")
 
         db.session.execute(qry)
         db.session.commit()
+        db.session.remove()
         return qry
 
     def actionin_shipping_data(area):
@@ -102,5 +106,6 @@ class motions(db.Model):
                   "where  (timestamp_diff > 0 ) order by scantimee  desc")
 
         box_cnt = db.session.execute(qry)
+        db.session.remove()
         return box_cnt if box_cnt else None
 
