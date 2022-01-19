@@ -91,14 +91,14 @@ class motions(db.Model):
 
     def actionin_shipping_data(area):
         qry = str("select cid, station ,timestamp_diff,scantimee,EXTRACT (hour  FROM to_timestamp(scantime, "
-                  "'YYYY-MM-DD hh24:mi:ss')::timestamp)    from (select id as cid, station,scantime, EXTRACT "
+                  "'YYYY-MM-DD hh24:mi:ss')::timestamp),to_timestamp(scantimee)::date as dateadded    from (select DISTINCT shipid, id as cid, station,scantime, EXTRACT "
                   "(epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) as scantimee, "
                   "EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - "
                   "lag(EXTRACT (epoch FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "as timestamp_diff from directshipping where station='"+area+"' AND  "
                   "(to_timestamp(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
-                  "AT TIME ZONE 'PST') >= current_date - 7 order by current_date desc) t  "
+                  "AT TIME ZONE 'PST') >= current_date - 7 order by id desc ) t  "
                   "where  (timestamp_diff > 0 ) order by scantimee  desc")
 
         box_cnt = db.session.execute(qry)

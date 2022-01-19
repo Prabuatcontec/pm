@@ -18,6 +18,7 @@ import pickle
 @blueprint.route('/report/box')
 @login_required
 def report_box():
+    print(pickle.format_version)
     stationBox = {"Line1Station": "box1", "Line2Station": "box2", "Line3Station": "box3","Line4Station": "box4"}
     stationTime = motions.actionin_box_area(stationBox[session['search_station']])
     time_report_count = {}
@@ -62,7 +63,8 @@ def report_shipping():
     for station in stationTime:
 
         dt_obj = datetime.fromtimestamp(station[3]).strftime('%d-%m-%Y')
-
+        dateAdd = str(station[5]).split('-')
+        dt_obj = dateAdd[2]+'-'+dateAdd[1]+'-'+dateAdd[0]
         if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}

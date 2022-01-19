@@ -16,7 +16,7 @@ class VideoCamera(object):
         # capturing video rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1
         # "rtsp://admin:3J7Bm!j@@10.10.153.13/doc/page/preview.asp"
         self.video = cv2.VideoCapture(
-            "rtsp://admin:contec23@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
+            "rtsp://admin:3J7Bm!j@@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
         ret, self.frame1 = self.video.read()
         ret, self.frame2 = self.video.read()
         self.frame1 = cv2.resize(self.frame1, (1100, 700), interpolation=cv2.INTER_AREA)
@@ -72,7 +72,7 @@ class VideoCamera(object):
                         # print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
                         if (point[0] >= oldX and point[1] > oldY) and (point[0] <= key[0] and point[1] < key[1]):
                             self.motions.append({station['name']: time.time()})
-                            self.capture_motion(station['name'])
+                           # self.capture_motion(station['name'])
                             # print(self.motions)
 
                 i = i + 1

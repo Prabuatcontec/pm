@@ -11,6 +11,7 @@ import time, requests
 import threading
 #from apps.report.models import motions
 
+print(int(time.time()))
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -94,6 +95,9 @@ def create_app(config):
     register_blueprints(app)
     configure_database(app)
     print("===================================================================")
-    threading.Thread(target=maintenance, daemon=True).start()
+
 
     return app
+
+def thread_deepblu():
+    threading.Thread(target=maintenance, daemon=True).start()
