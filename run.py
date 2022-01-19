@@ -9,6 +9,11 @@ from decouple import config
 
 from apps.config import config_dict
 from apps import create_app, db, thread_deepblu
+from apps.report.models import motions
+from apps.camera.autoid import autoid
+import time, requests, datetime
+from time import strftime
+import threading
 
 
 # WARNING: Don't run with debug turned on in production!
@@ -36,7 +41,70 @@ if DEBUG:
     app.logger.info('Environment = ' + get_config_mode)
     app.logger.info('DBMSssss        = ' + app_config.SQLALCHEMY_DATABASE_URI)
 
+def maintenance():
+    with app.app_context():
 
+
+            while True:
+                time.sleep(119)
+                autoids = autoid().request_loader()
+                last_Date_from = autoids.value.strip().split(' ')
+
+                print(last_Date_from)
+                last_time = (int(datetime.datetime.strptime(autoids.value.strip()+',000', "%Y-%m-%d %H:%M:%S,%f").timestamp()))
+                last_time = last_time + 120
+
+                if int(time.time()) > int(last_time):
+                    last_Date_to = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(last_time)))
+                    last_Date_to = last_Date_to.split(' ')
+                    if last_Date_from[0] != last_Date_to[0]:
+                        date_send = last_Date_to[0]
+                        date_from_time = "00:00:00"
+                        date_to_time = last_Date_to[1]
+                    else:
+                        date_send = last_Date_from[0]
+                        date_from_time = last_Date_from[1]
+                        date_to_time = last_Date_to[1]
+
+                    print(date_send)
+                    print(date_from_time)
+                    print(date_to_time)
+                    #print(strftime("%H:%M:%S",int(datetime.datetime.strptime(autoids.value.strip()+',000', "%Y-%m-%d %H:%M:%S,%f").timestamp())))
+                    response = requests.get('https://deepbluapi.gocontec.com/autoreceive/direct-shipments?_format=json&date='+date_send+'&s_time='+date_from_time+'&e_time='+date_to_time+'',
+                                            headers={'Content-Type': 'application/json',
+                                                     'Authorization': 'Basic QVVUT1JFQ0VJVkU6YXV0b0AxMjM='}
+                                            )
+                    if response.status_code == 200:
+                        data_time = []
+                        if (response.content.decode("utf-8")  != ""):
+                            result = response.json()
+                            #print(result)
+                            s = 0
+                            for value in result:
+                                 s = 1
+                                 data_time = value["Scan Timestamp"]
+                                 values = {"scantime": value["Scan Timestamp"],
+                                                               "station": str(value["Work Station ID"]),
+                                                               "operator": value["Operator ID"],
+                                                               "product": value["Product ID"],
+                                                               "eventtype": value["Event Type"],
+                                                               "shipid": value["Shipment ID"],
+                                                               "errorcode": value["Error Code"],
+                                                               "errormessage": value["Error Message"] }
+
+                                 print(values)
+                                 #print("================")
+                                 motions.add_data(values)
+
+                        upautoidlastValue = date_send +' '+date_to_time
+                        print(upautoidlastValue)
+                        db.session.query(autoid).filter(autoid.id == 1).update(
+                            {'value':  upautoidlastValue})
+                        db.session.commit()
+                        db.session.remove()
+
+
+#threading.Thread(target=maintenance, daemon=True).start()
 
 if __name__ == "__main__":
 
