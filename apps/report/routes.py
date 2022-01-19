@@ -49,7 +49,7 @@ def report_box():
 @blueprint.route('/report/shipping')
 @login_required
 def report_shipping():
-    stationDis = {"Line1Station": "CLD-SHIP13", "Line2Station": "CLD-SHIP15","Line3Station": "CLD-SHIP16","Line4Station": "CLD-SHIP21"}
+    stationDis = {"Line1Station": "CLD-SHIP13", "Line2Station": "CLD-SHIP15", "Line3Station": "CLD-SHIP16", "Line4Station": "CLD-SHIP21"}
 
     stationTime = motions.actionin_shipping_data(stationDis[session['search_station']])
     time_report_count = {}
@@ -57,14 +57,39 @@ def report_shipping():
     time_report_hrs = {}
     pretime = {}
     hrShippingCount = {}
-    totalAway = 0
+    customers = {}
 
-    station_all_day = {}
+    shipping_cus_count = {}
+
+    warehouses = {}
+
+    now = datetime.now()
+    for x in range(8):
+        d = now - timedelta(days=x)
+        dt_objr = d.strftime("%d-%m-%Y")
+
+        if dt_objr not in shipping_cus_count:
+            shipping_cus_count[dt_objr] = {}
+
+
+    print(shipping_cus_count)
+
     for station in stationTime:
 
-        dt_obj = datetime.fromtimestamp(station[3]).strftime('%d-%m-%Y')
         dateAdd = str(station[5]).split('-')
         dt_obj = dateAdd[2]+'-'+dateAdd[1]+'-'+dateAdd[0]
+        str_customer = str(station[6])[0:3]
+        wh = station[7].strip()
+        if str_customer not in customers:
+            customers[str_customer] = str_customer
+        if wh not in warehouses:
+            warehouses = wh
+
+
+        if str_customer not in shipping_cus_count[dt_obj]:
+            shipping_cus_count[dt_obj][str_customer] = 0
+        shipping_cus_count[dt_obj][str_customer] = shipping_cus_count[dt_obj][str_customer] + 1
+
         if dt_obj not in time_report_count:
             time_report_count[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
             time_report[dt_obj] = {"0-1": 0, "1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
@@ -123,7 +148,10 @@ def report_shipping():
                        "time_report": time_report,
                        "time_report_hrs": time_report_hrs,
                        "pretime": pretime,
-                       "hrShippingCount": hrShippingCount}
+                       "hrShippingCount": hrShippingCount,
+                       "shipping_cus_count": shipping_cus_count,
+                       "warehouses": warehouses,
+                       "customers": customers}
 
     pickle.dump(time_report_hrs, open(get_correct_path(session['search_station'] + "_hr_Shipping.p"), "wb"))
     pickle.dump(hrShippingCount, open(get_correct_path(session['search_station'] + "_hrShippingCount.p"), "wb"))

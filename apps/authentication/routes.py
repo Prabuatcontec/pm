@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, session
 from flask_login import (
     current_user,
     login_user,
@@ -41,6 +41,8 @@ def login():
         if user and verify_pass(password, user.password):
 
             login_user(user)
+            session['warehouse'] = user.warehouse
+
             return redirect(url_for('authentication_blueprint.route_default'))
 
         # Something (user or pass) is not ok

@@ -69,7 +69,6 @@ def maintenance():
                     print(date_send)
                     print(date_from_time)
                     print(date_to_time)
-                    #print(strftime("%H:%M:%S",int(datetime.datetime.strptime(autoids.value.strip()+',000', "%Y-%m-%d %H:%M:%S,%f").timestamp())))
                     response = requests.get('https://deepbluapi.gocontec.com/autoreceive/direct-shipments?_format=json&date='+date_send+'&s_time='+date_from_time+'&e_time='+date_to_time+'',
                                             headers={'Content-Type': 'application/json',
                                                      'Authorization': 'Basic QVVUT1JFQ0VJVkU6YXV0b0AxMjM='}
@@ -90,7 +89,8 @@ def maintenance():
                                                                "eventtype": value["Event Type"],
                                                                "shipid": value["Shipment ID"],
                                                                "errorcode": value["Error Code"],
-                                                               "errormessage": value["Error Message"] }
+                                                               "errormessage": value["Error Message"],
+                                                               "siteid": value["Site ID"] }
 
                                  print(values)
                                  #print("================")

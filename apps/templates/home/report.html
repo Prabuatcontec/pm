@@ -174,7 +174,7 @@
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
           <div class="card z-index-2 ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-light  shadow-light  border-radius-lg py-3 pe-1">
+              <div class="bg-gradient-info  shadow-info  border-radius-lg py-3 pe-1">
                 <div class="chart">
                   <canvas id="chart-doughnut" class="chart-canvas" height="250"></canvas>
                 </div>
@@ -216,6 +216,24 @@
           </div>
         </div>
       </div>
+
+        <div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-bars-warehouse" class="chart-canvas" height="250"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 ">Customer Shipments <a href="/report-csv" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a></h6>
+              <p class="text-sm ">Customer Shipments in station</p>
+
+            </div>
+          </div>
+        </div>
     </div>
       {% include 'includes/footer.html' %}
     </div>
@@ -236,6 +254,35 @@
     var firstMotion;
     var firstShipping;
     var timeIntervalCount;
+    var shippingCusCount;
+    var warehouses;
+    var customers;
+
+var color = {0:'#ffffff',
+              1:'#ffffff',
+              2:'#ffffff',
+              3:'#ffffff',
+              4:'#800080',
+              5:'#00008B',
+              6:'#FFC0CB',
+              7:'#FFA500',
+              8:'#FFFF00',
+              9:'#808080',
+              10:'#FFA000',
+              11:'#657383',
+              12:'#16E2F5',
+              13:'#848B79',
+              14:'#550A35',
+              15:'#7E587E',
+              16:'#FBFBF9',
+              17:'#8B0000',
+              18:'#ffffff',
+              19:'#ffffff',
+              20:'#ffffff',
+              21:'#ffffff',
+              22:'#ffffff',
+              23:'#ffffff'
+              }
 <!--   window.setTimeout(function () {-->
 <!--  window.location.reload();-->
 <!--}, 30000);-->
@@ -622,6 +669,9 @@ success: function(response) {
         },
     });
 
+
+
+
     var shippingCharbar = ShippingCharBar()
 },
 });
@@ -643,6 +693,14 @@ success: function(response) {
 
     firstShipping = response['result']['pretime'];
     timeIntervalCount = response['result']['hrShippingCount']
+    shippingCusCount = response['result']['shipping_cus_count']
+    warehouses = response['result']['warehouses']
+    customers = response['result']['customers']
+
+
+
+
+
 
 
 
@@ -817,6 +875,128 @@ success: function(response) {
                         color: "#fff",
                         callback: function(label, index, labels) {
                             return label + ' min';
+
+                            // return _label;
+                        }
+                    },
+                },
+                x: {
+                    stacked: true,
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)',
+
+                    },
+                    ticks: {
+                        display: true,
+                        color: '#f8f9fa',
+                        padding: 10,
+                        font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                        }
+                    }
+                },
+            },
+        },
+    });
+
+     var ctx = document.getElementById("chart-bars-warehouse").getContext("2d");
+    customers = Object.values(customers);
+    var dataset = [];
+    for(w=0;w<=customers.length;w++)
+    {
+       var dataarr =[]
+       for(o=0;o<=6;o++) {
+          var c = 0;
+          if (shippingCusCount[lab[o]][customers[w]] !== undefined) {
+            c = shippingCusCount[lab[o]][customers[w]]
+          }
+          dataarr[o] = shippingCusCount[lab[o]][customers[w]]
+       }
+      var dset = {
+        label: customers[w],
+        tension: 0.8,
+        borderWidth: 0,
+        borderRadius: 1,
+        borderSkipped: false,
+        backgroundColor: color[w+2],
+        data: dataarr,
+        maxBarThickness: 15
+      }
+      dataset.push(dset)
+
+    }
+
+
+
+
+    var timedata = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: lab_num,
+            datasets: dataset,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += parseInt(context.parsed.y) ;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            scales: {
+                y: {
+                    stacked: true,
+                    grid: {
+                        drawBorder: false,
+                        display: true,
+                        drawOnChartArea: true,
+                        drawTicks: false,
+                        borderDash: [5, 5],
+                        color: 'rgba(255, 255, 255, .2)'
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 500,
+                        beginAtZero: true,
+                        padding: 10,
+                        font: {
+                            size: 14,
+                            weight: 300,
+                            family: "Roboto",
+                            style: 'normal',
+                            lineHeight: 2
+                        },
+                        color: "#fff",
+                        callback: function(label, index, labels) {
+                            return label;
 
                             // return _label;
                         }
@@ -1107,34 +1287,14 @@ function chartLineDataAdd() {
   },
 });
 
-var color = {0:'#ffffff',
-              1:'#ffffff',
-              2:'#ffffff',
-              3:'#ffffff',
-              4:'#800080',
-              5:'#00008B',
-              6:'#FFC0CB',
-              7:'#FFA500',
-              8:'#FFFF00',
-              9:'#808080',
-              10:'#FFA000',
-              11:'#657383',
-              12:'#16E2F5',
-              13:'#848B79',
-              14:'#550A35',
-              15:'#7E587E',
-              16:'#FBFBF9',
-              17:'#8B0000',
-              18:'#ffffff',
-              19:'#ffffff',
-              20:'#ffffff',
-              21:'#ffffff',
-              22:'#ffffff',
-              23:'#ffffff'
-              }
-              var lb_hrs = {};
-
-
+        var lb_hrs = {};
+  for(xp = 0; xp <=6; xp++) {
+    for(x = 0; x <=23; x++) {
+      if (parseInt(timeIntervalCount[lab[xp]][x])>0) {
+        $('#hr-t-body').prepend('<tr><td><div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">'+lab[xp]+' '+x+':00:00</h6></div></div></td><td><p class="text-xs font-weight-bold mb-0">'+timeIntervalCount[lab[xp]][x]+'</p></td></tr>');
+      }
+    }
+  }
   for(x = 0; x <=23; x++) {
 
     lb_hrs[x] = x + 'hrs';
@@ -1149,11 +1309,10 @@ var color = {0:'#ffffff',
 
       for(xp = 0; xp <=6; xp++) {
         cxp.data.datasets[x].data.push(timeIntervalCount[lab[xp]][x]);
-        if (parseInt(timeIntervalCount[lab[xp]][x])>0) {
-        $('#hr-t-body').append('<tr><td><div class="d-flex px-2 py-1"><div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">'+lab[xp]+' '+x+':00:00</h6></div></div></td><td><p class="text-xs font-weight-bold mb-0">'+timeIntervalCount[lab[xp]][x]+'</p></td></tr>');
-        }
+
        }
       }
+
 
 
       var weekTotal;

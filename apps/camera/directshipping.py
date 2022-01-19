@@ -21,6 +21,7 @@ class directshipping(db.Model):
     shipid = db.Column(db.String(50))
     errorcode = db.Column(db.String)
     errormessage = db.Column(db.String)
+    siteid = db.Column(db.String)
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -49,5 +50,5 @@ class directshipping(db.Model):
         return stations if stations else None
 
     def add_data(values):
-        qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage) VALUES ('"+values['scantime']+"','"+values['station']+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"') ")
+        qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+str(values['station']+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"','"+values['siteid']+"') ")
         db.session.execute(qry)

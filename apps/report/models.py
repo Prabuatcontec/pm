@@ -81,9 +81,9 @@ class motions(db.Model):
 
     def add_data(values):
         qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,"
-               "shipid,errorcode,errormessage) VALUES ('"+values['scantime']+"','"+values['station']+"',"
+               "shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+values['station']+"',"
                 "'"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"'"
-                ",'"+values['errorcode']+"','"+values['errormessage']+"') ")
+                ",'"+values['errorcode']+"','"+values['errormessage']+"','"+values['siteid']+"') ")
 
         db.session.execute(qry)
         db.session.commit()
@@ -91,12 +91,12 @@ class motions(db.Model):
 
     def actionin_shipping_data(area):
         qry = str("select cid, station ,timestamp_diff,scantimee,EXTRACT (hour  FROM to_timestamp(scantime, "
-                  "'YYYY-MM-DD hh24:mi:ss')::timestamp),to_timestamp(scantimee)::date as dateadded    from (select DISTINCT shipid, id as cid, station,scantime, EXTRACT "
+                  "'YYYY-MM-DD hh24:mi:ss')::timestamp),to_timestamp(scantimee)::date as dateadded, product ,siteid   from (select DISTINCT shipid, id as cid, station,scantime, EXTRACT "
                   "(epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) as scantimee, "
                   "EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - "
                   "lag(EXTRACT (epoch FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
-                  "as timestamp_diff from directshipping where station='"+area+"' AND  "
+                  "as timestamp_diff, product,siteid from directshipping where station='"+area+"' AND  "
                   "(to_timestamp(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "AT TIME ZONE 'PST') >= current_date - 7 order by id desc ) t  "
                   "where  (timestamp_diff > 0 ) order by scantimee  desc")
