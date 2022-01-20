@@ -34,7 +34,10 @@ class autoid(db.Model):
 
 
     def autoid_loader(self, id):
-        return autoid.query.filter_by(id=id).first()
+        auditid = autoid.query.filter_by(id=id).first()
+        db.session.remove()
+        db.session.close()
+        return auditid
 
 
     def request_loader(self):

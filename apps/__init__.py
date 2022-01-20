@@ -36,6 +36,7 @@ def configure_database(app):
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
+        db.session.close()
 
 def get_mouse_posn(event):
     global topy, topx

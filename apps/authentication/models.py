@@ -18,6 +18,7 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True)
     password = db.Column(db.LargeBinary)
     warehouse = db.Column(db.String(64))
+    user_timezone = db.Column(db.String(5))
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -39,7 +40,11 @@ class Users(db.Model, UserMixin):
 
 @login_manager.user_loader
 def user_loader(id):
-    return Users.query.filter_by(id=id).first()
+    user = Users.query.filter_by(id=id).first()
+    db.session.commit()
+    db.session.remove()
+    db.session.close()
+    return user
 
 
 @login_manager.request_loader

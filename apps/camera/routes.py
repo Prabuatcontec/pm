@@ -91,6 +91,8 @@ def add_station_config():
 
     db.session.add(stationCon)
     db.session.commit()
+    db.session.remove()
+    db.session.close()
 
     addStationPickle = {}
     addStationPickle = stations

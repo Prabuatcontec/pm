@@ -47,11 +47,21 @@ def maintenance():
 
             while True:
                 time.sleep(119)
-                autoids = autoid().request_loader()
-                last_Date_from = autoids.value.strip().split(' ')
+                autoid = str("Select value from autoid WHERE id = 1 limit 1")
+
+                autoids = db.session.execute(autoid)
+
+                db.session.commit()
+                db.session.remove()
+                db.session.close()
+                auditval = ''
+                for autoid in autoids:
+                    last_Date_from = autoid['value'].strip().split(' ')
+                    auditval = autoid['value']
 
                 print(last_Date_from)
-                last_time = (int(datetime.datetime.strptime(autoids.value.strip()+',000', "%Y-%m-%d %H:%M:%S,%f").timestamp()))
+                last_time = (
+                    int(datetime.datetime.strptime(auditval.strip() + ',000', "%Y-%m-%d %H:%M:%S,%f").timestamp()))
                 last_time = last_time + 120
 
                 if int(time.time()) > int(last_time):
@@ -65,7 +75,7 @@ def maintenance():
                         date_send = last_Date_from[0]
                         date_from_time = last_Date_from[1]
                         date_to_time = last_Date_to[1]
-
+                    date_to_time = '21:00:00'
                     print(date_send)
                     print(date_from_time)
                     print(date_to_time)
@@ -102,6 +112,7 @@ def maintenance():
                             {'value':  upautoidlastValue})
                         db.session.commit()
                         db.session.remove()
+                        db.session.close()
 
 
 #threading.Thread(target=maintenance, daemon=True).start()

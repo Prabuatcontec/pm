@@ -38,7 +38,10 @@ class stationconfig(db.Model):
 
 
     def user_loader(id):
-        return stationconfig.query.filter_by(id=id).first()
+        stationcon = stationconfig.query.filter_by(id=id).first()
+        db.session.remove()
+        db.session.close()
+        return stationcon
 
 
     def request_loader(request):

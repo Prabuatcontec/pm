@@ -19,6 +19,8 @@ class motions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     area = db.Column(db.String)
     timeadded = db.Column(db.Integer)
+    warehouse = db.Column(db.Integer)
+    station_type = db.Column(db.Integer)
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -38,32 +40,44 @@ class motions(db.Model):
 
 
     def motion_loader(id):
-        return motions.query.filter_by(id=id).first()
+        motion = motions.query.filter_by(id=id).first()
+        db.session.remove()
+        db.session.close()
+        return motion
 
 
     def motion_loader(request):
         station = request.form.get('station')
         stations = motions.query.filter_by(station=station).first()
         db.session.remove()
+        db.session.close()
         return stations if stations else None
 
-    def motion_loader_byarea(area):
-        qrl = str("select (select timeadded as  pretimestamp from motions where id < cid   and "
-                  "area =  '"+area+"' order by id desc limit 1),(select id as pre_id from "
-                   "motions where id < cid  and area = '"+area+"' order by id desc limit 1), "
-                    "cid, area,timeadded, timestamp_diff,dd from (select id as cid, area, "
+    def motion_loader_byarea(area, warehous='1', station_typ='1', fromtime=14400, totime=60):
+        qrl = str(" ( Select pre_timestamp, pre_id, cid, area, timeadded, time_difference,    warehouse, "
+                  "station_type from motionsgroup Where (to_timestamp(timeadded) AT TIME ZONE 'PST') >= current_date - 7"
+                  " and time_difference < "+str(fromtime)+" and time_difference > "+str(totime)+" and area =  '"+area+"' and "
+                  " warehouse= "+warehous+" and station_type= "+station_typ+" order by time_difference desc ) "
+                  " UNION ALL (select (select timeadded as  pretimestamp from motions where id < cid   and "
+                  " area =  '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
+                   " order by id desc limit 1),(select id as pre_id from "
+                   "motions where id < cid  and area = '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
+                   " order by id desc limit 1), "
+                    "cid, area,timeadded, timestamp_diff,warehouse,station_type from (select id as cid, area, "
                    "timeadded, timeadded - lag(timeadded) "
                    "over (order by timeadded) as timestamp_diff, "
                    "(to_timestamp(timeadded - lag(timeadded) "
-                   "over (order by timeadded)/1000) AT TIME ZONE 'UTC') "
+                   "over (order by timeadded)/1000) AT TIME ZONE 'PST') "
                    "as dd, (to_timestamp(timeadded - lag(timeadded) "
-                   "over (order by timeadded)/1000) AT TIME ZONE 'UTC')::timestamp::date as "
-                   "ddate from motions where area = '"+area+"' AND  (to_timestamp(timeadded) AT TIME ZONE 'PST') "
+                   "over (order by timeadded)/1000) AT TIME ZONE 'PST')::timestamp::date as "
+                   "ddate,warehouse,station_type from motions where area = '"+area+"' and warehouse= "+warehous+""
+                  " and station_type= "+station_typ+" AND  (to_timestamp(timeadded) AT TIME ZONE 'PST') "
                     ">= current_date - 7  order by timeadded ) t where (timestamp_diff < 14400 "
-                    "and timestamp_diff > 60) order by timestamp_diff desc")
+                    "and timestamp_diff > 60) order by timestamp_diff desc)")
 
         stations = db.session.execute(qrl)
         db.session.remove()
+        db.session.close()
         return stations if stations else None
 
     def actionin_box_area(area):
@@ -80,6 +94,7 @@ class motions(db.Model):
                 "t where  (timestamp_diff > 0 and timestamp_diff < 30) order by cid  desc; ")
         box_cnt = db.session.execute(qry)
         db.session.remove()
+        db.session.close()
         return box_cnt if box_cnt else None
 
     def add_data(values):
@@ -91,15 +106,16 @@ class motions(db.Model):
         db.session.execute(qry)
         db.session.commit()
         db.session.remove()
+        db.session.close()
         return qry
 
     def actionin_shipping_data(area):
         qry = str("select cid, station ,timestamp_diff,scantimee,EXTRACT (hour  FROM to_timestamp(scantime, "
                   "'YYYY-MM-DD hh24:mi:ss')::timestamp),to_timestamp(scantimee)::date as dateadded, product ,siteid   from (select DISTINCT shipid, id as cid, station,scantime, EXTRACT "
-                  "(epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) as scantimee, "
-                  "EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp) - "
-                  "lag(EXTRACT (epoch FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
-                  "over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
+                  "(epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp  AT TIME ZONE 'PST') as scantimee, "
+                  "EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp  AT TIME ZONE 'PST') - "
+                  "lag(EXTRACT (epoch FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp  AT TIME ZONE 'PST')) "
+                  "over (order by EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp  AT TIME ZONE 'PST')) "
                   "as timestamp_diff, product,siteid from directshipping where station='"+area+"' AND  "
                   "(to_timestamp(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "AT TIME ZONE 'PST') >= current_date - 7 order by id desc ) t  "
@@ -107,5 +123,6 @@ class motions(db.Model):
 
         box_cnt = db.session.execute(qry)
         db.session.remove()
+        db.session.close()
         return box_cnt if box_cnt else None
 

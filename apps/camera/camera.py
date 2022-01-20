@@ -72,7 +72,7 @@ class VideoCamera(object):
                         # print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
                         if (point[0] >= oldX and point[1] > oldY) and (point[0] <= key[0] and point[1] < key[1]):
                             self.motions.append({station['name']: time.time()})
-                           # self.capture_motion(station['name'])
+                            self.capture_motion(station['name'])
                             # print(self.motions)
 
                 i = i + 1
@@ -110,10 +110,11 @@ class VideoCamera(object):
         # ts stores timestamp
         ts = calendar.timegm(gmt)
         if len(self.motions) > 0:
-            motions_add = motions(**{"area": str(motion), "timeadded": ts})
+            motions_add = motions(**{"area": str(motion), "timeadded": ts, "warehouse": 1, "station_type": 1})
             db.session.add(motions_add)
             db.session.commit()
-
+            db.session.remove()
+            db.session.close()
 
 def get_correct_path(relative_path):
     p = os.path.abspath(".").replace('/dist', "")

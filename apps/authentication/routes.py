@@ -42,6 +42,7 @@ def login():
 
             login_user(user)
             session['warehouse'] = user.warehouse
+            session['timedep'] = int(user.user_timezone)*3600
 
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -84,6 +85,8 @@ def register():
         user = Users(**request.form)
         db.session.add(user)
         db.session.commit()
+        db.session.remove()
+        db.session.close()
 
         return render_template('accounts/register.html',
                                msg='User created please <a href="/login">login</a>',

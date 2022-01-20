@@ -41,7 +41,10 @@ class directshipping(db.Model):
 
 
     def user_loader(id):
-        return directshipping.query.filter_by(id=id).first()
+        directshippin = directshipping.query.filter_by(id=id).first()
+        db.session.remove()
+        db.session.close()
+        return directshippin
 
 
     def request_loader(request):
@@ -53,3 +56,4 @@ class directshipping(db.Model):
         qry = ("INSERT INTO  directshipping (scantime,station,operator,product,eventtype,shipid,errorcode,errormessage,siteid) VALUES ('"+values['scantime']+"','"+str(values['station'])+"','"+values['operator']+"','"+values['product']+"','"+values['eventtype']+"','"+values['shipid']+"','"+values['errorcode']+"','"+values['errormessage']+"','"+str(values['siteid'])+"') ")
         db.session.execute(qry)
         db.session.remove()
+        db.session.close()
