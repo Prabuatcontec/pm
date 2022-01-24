@@ -66,8 +66,8 @@ class VideoDataCamera(object):
                     cv2.rectangle(self.frame1, (oldX, oldY),
                              (key[0], key[1]), (0, 255, 0),
                              thickness=1)
-                    cv2.putText(self.frame1, station['name'], (oldX, oldY), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5, (255, 0, 0), 1)
+                    cv2.putText(self.frame1, station['name'], (oldX-10, oldY-10), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5, (255, 255, 255), 1)
                 i = i + 1
                 oldX = key[0]
                 oldY = key[1]

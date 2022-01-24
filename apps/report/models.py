@@ -43,6 +43,7 @@ class motions(db.Model):
         motion = motions.query.filter_by(id=id).first()
         db.session.remove()
         db.session.close()
+        db.session.commit()
         return motion
 
 
@@ -51,6 +52,7 @@ class motions(db.Model):
         stations = motions.query.filter_by(station=station).first()
         db.session.remove()
         db.session.close()
+        db.session.commit()
         return stations if stations else None
 
     def motion_loader_byarea(area, warehous='1', station_typ='1', fromtime=14400, totime=60):
@@ -78,6 +80,7 @@ class motions(db.Model):
         stations = db.session.execute(qrl)
         db.session.remove()
         db.session.close()
+        db.session.commit()
         return stations if stations else None
 
     def actionin_box_area(area):
@@ -95,6 +98,7 @@ class motions(db.Model):
         box_cnt = db.session.execute(qry)
         db.session.remove()
         db.session.close()
+        db.session.commit()
         return box_cnt if box_cnt else None
 
     def add_data(values):
@@ -108,6 +112,18 @@ class motions(db.Model):
         db.session.remove()
         db.session.close()
         return qry
+
+    def get_cnt_lastweek(area):
+        qry = str("SELECT DISTINCT(count(shipid)) as cnt FROM public.directshipping "
+                  "Where station='"+area+"' AND (to_timestamp(EXTRACT (epoch  FROM  "
+                  "to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) AT TIME ZONE 'PST') < current_date - 7 "
+                  "AND (to_timestamp(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
+                  "AT TIME ZONE 'PST') >= current_date - 14 ")
+        box_cnt = db.session.execute(qry)
+        db.session.remove()
+        db.session.close()
+        db.session.commit()
+        return box_cnt if box_cnt else None
 
     def actionin_shipping_data(area):
         qry = str("select cid, station ,timestamp_diff,scantimee,EXTRACT (hour  FROM to_timestamp(scantime, "
@@ -124,5 +140,6 @@ class motions(db.Model):
         box_cnt = db.session.execute(qry)
         db.session.remove()
         db.session.close()
+        db.session.commit()
         return box_cnt if box_cnt else None
 

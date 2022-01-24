@@ -11,7 +11,7 @@ from apps.authentication.util import hash_pass
 
 class Users(db.Model, UserMixin):
 
-    __tablename__ = 'Users'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
@@ -41,6 +41,14 @@ class Users(db.Model, UserMixin):
 @login_manager.user_loader
 def user_loader(id):
     user = Users.query.filter_by(id=id).first()
+    # us = str("Select username from users where id = "+id)
+    #
+    # usqry = db.session.execute(us).fetchone()
+    # print(usqry.username)
+    #
+    # print("======")
+    # print(user)
+    # user = usqry.username
     db.session.commit()
     db.session.remove()
     db.session.close()

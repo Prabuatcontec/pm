@@ -29,7 +29,7 @@
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+55% </span>than lask week</p>
+              <p class="mb-0"><span class="text-sm font-weight-bolder" id="last_week_count">+0% </span>than lask week</p>
             </div>
           </div>
         </div>
@@ -46,7 +46,7 @@
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+3% </span>than lask month</p>
+              <p class="mb-0"><span class="text-sm font-weight-bolder" id="pre_yesterday_count">+0% </span>than Yesterday</p>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
         <div class="col-xl-3 col-sm-6">
           <div class="card">
             <div class="card-header p-3 pt-2">
-              <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+              <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
                 <i class="material-icons opacity-10">weekend</i>
               </div>
               <div class="text-end pt-1">
@@ -80,7 +80,63 @@
             </div>
             <hr class="dark horizontal my-0">
             <div class="card-footer p-3">
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+5% </span>than yesterday</p>
+              <p class="mb-0"><span class="text-sm font-weight-bolder" id="last_volume_highest">+0% </span>than last Highest</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-lg-4 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-light shadow-light border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-bars-activity" class="chart-canvas" height="212" width="440" style="display: block; box-sizing: border-box; height: 170px; width: 352.7px;"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 ">Last 7 days Activity</h6>
+              <p class="text-sm ">Last 7 days Active vs Inactive</p>
+
+
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2  ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-light shadow-light border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-line-activity" class="chart-canvas" height="212" width="440" style="display: block; box-sizing: border-box; height: 170px; width: 352.7px;"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 "> Yesterday Activity</h6>
+              <p class="text-sm "> Yesterday Active vs Inactive. </p>
+
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-4 mb-3">
+          <div class="card z-index-2 ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-dark shadow-dark border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-line-tasks-activity" class="chart-canvas" height="212" width="440" style="display: block; box-sizing: border-box; height: 170px; width: 352.7px;"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 ">Completed Tasks</h6>
+              <p class="text-sm ">Last Campaign Performance</p>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm">just updated</p>
+              </div>
             </div>
           </div>
         </div>
@@ -105,19 +161,19 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-md-6 mt-4 mb-4">
-          <div class="card z-index-2  ">
+<div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2 ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+              <div class="bg-gradient-light  shadow-light  border-radius-lg py-3 pe-1">
                 <div class="chart">
-                  <canvas id="chart-line-shipping" class="chart-canvas" height="250"></canvas>
+                  <canvas id="chart-line-date" class="chart-canvas" height="250"></canvas>
                 </div>
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 "> Box Area Activity </h6>
-              <p class="text-sm ">Activity by date</p>
-
+              <h6 class="mb-0 ">Operator Shipping count <a href="/report-csv-op-activity" target="_blank">
+                <i class="material-icons opacity-10"   >download</i></a></h6>
+              <p class="text-sm ">Operator Shipping Count Every Hour</p>
             </div>
           </div>
         </div>
@@ -163,21 +219,23 @@
 
       <div class="row mt-4">
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
-          <div class="card z-index-2 ">
+          <div class="card z-index-2  ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-              <div class="bg-gradient-light  shadow-light  border-radius-lg py-3 pe-1">
+              <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
                 <div class="chart">
-                  <canvas id="chart-line-date" class="chart-canvas" height="250"></canvas>
+                  <canvas id="chart-line-shipping" class="chart-canvas" height="250"></canvas>
                 </div>
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Operator Shipping count <a href="/report-csv-op-activity" target="_blank">
-                <i class="material-icons opacity-10"   >download</i></a></h6>
-              <p class="text-sm ">Operator Shipping Count Every Hour</p>
+              <h6 class="mb-0 "> Box Area Activity </h6>
+              <p class="text-sm ">Activity by date</p>
+
             </div>
           </div>
         </div>
+
+
         <div class="col-lg-6 col-md-6 mt-4 mb-4">
           <div class="card z-index-2 ">
             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
@@ -234,7 +292,7 @@
               </div>
             </div>
             <div class="card-body">
-              <h6 class="mb-0 ">Customer Shipments <a href="/report-csv" target="_blank">
+              <h6 class="mb-0 ">Customer Shipments <a href="/report/shipping/customer" target="_blank">
                 <i class="material-icons opacity-10"   >download</i></a></h6>
               <p class="text-sm ">Customer Shipments in station</p>
 
@@ -264,6 +322,10 @@
     var shippingCusCount;
     var warehouses;
     var customers;
+    var last_week_count;
+    var total_hours;
+    var total_wrk_hrs;
+    var last_shipping_active;
 
 var color = {0:'#ffffff',
               1:'#ffffff',
@@ -302,7 +364,6 @@ contentType: "application/json",
 dataType: "json",
 success: function(response) {
      var charbars = charbar()
-    console.log(response)
     var lab = []
     var lab_num = []
     for (var da = 6; da >= 0; da--) {
@@ -315,6 +376,8 @@ success: function(response) {
         lab_num.push(finalDateNum)
     }
     $("#station_name").html(response['result']['station_name']);
+
+    last_week_count = response['result']['last_week_count']
     for (so = 0; so <= 6; so++) {
         if (response['result']['time_report_hrs'][lab[so]] === undefined) {
             response['result']['time_report_hrs'][lab[so]] = {
@@ -449,8 +512,6 @@ data: {},
 contentType: "application/json",
 dataType: "json",
 success: function(response) {
-    console.log("Motion");
-    console.log(response);
     var ctx = document.getElementById("chart-bars").getContext("2d");
 
     firstMotion = response['result']['pretime'];
@@ -582,6 +643,146 @@ success: function(response) {
         data: [response['result']['time_report_hrs'][lab[0]]['15-60'], response['result']['time_report_hrs'][lab[1]]['15-60'], response['result']['time_report_hrs'][lab[2]]['15-60'], response['result']['time_report_hrs'][lab[3]]['15-60'], response['result']['time_report_hrs'][lab[4]]['15-60'], response['result']['time_report_hrs'][lab[5]]['15-60'], response['result']['time_report_hrs'][lab[6]]['15-60']],
         maxBarThickness: 10
     }];
+    var tim_lmt_ar = ['1-2', '2-3', '3-5', '5-10', '10-15', '15-60'];
+    total_hours = 0;
+    total_wrk_hrs = 0;
+    var yesterday_hrs;
+    yesterday_hrs = [];
+    for(l = 0 ; l<=lab.length;l++) {
+      var p = 0;
+      yesterday_hrs[lab[l]] = 0
+      for(s=0; s<=tim_lmt_ar.length;s++){
+        if (response['result']['time_report_hrs'][lab[l]] != undefined ) {
+          if (response['result']['time_report_hrs'][lab[l]][tim_lmt_ar[s]]>0) {
+
+           p = 1;
+           total_wrk_hrs = (response['result']['time_report_hrs'][lab[l]][tim_lmt_ar[s]]*60) + total_wrk_hrs;
+           yesterday_hrs[lab[l]] = yesterday_hrs[lab[l]] + (response['result']['time_report_hrs'][lab[l]][tim_lmt_ar[s]]*60);
+          }
+        }
+      }
+      if(p == 1) {
+        total_hours = total_hours + (3600*7);
+      }
+
+    }
+     var diff_number  = (total_hours-total_wrk_hrs)
+
+
+    var non_prod = Math.round((total_wrk_hrs/diff_number)*100);
+    var s = 0;
+    var processDate = 'Yesterday';
+    var processDate_Count;
+    processDate_Count = 0;
+    for (var da = 6; da >= 0; da--) {
+      if(yesterday_hrs[lab[da]] > 0 && s == 0) {
+        processDate = lab[da];
+        processDate_Count = yesterday_hrs[lab[da]];
+        s = s + 1;
+      }
+    }
+
+
+    var diff_number_1  = ((3600*7)-processDate_Count)
+    console.log(diff_number_1)
+
+    var non_prod_1 = Math.round((processDate_Count/diff_number_1)*100);
+
+    var ctx2_dg = document.getElementById("chart-line-activity").getContext("2d");
+
+
+const alwaysShowTooltip = {
+  id: 'alwaysShowTooltip ',
+  afterDraw(chart, args, options){
+
+
+    const { ctx } = chart;
+      ctx.save();
+       for (gx = 0 ;gx <= 1; gx++) {
+      const {x, y} = chart.getDatasetMeta(0).data[gx].tooltipPosition();
+
+      const text = chart.data.labels[gx]+':'+chart.data.datasets[0].data[gx];
+      const   textWidth = ctx.measureText(text).width + 10;
+
+      ctx.fillStyle= 'rgb(0, 0, 0, 0.8)';
+      width = 20;
+      ctx.fillRect (x - (textWidth+10)/2, y- 25, textWidth+10,20)
+
+       ctx.beginPath();
+       ctx.moveTo(x, y);
+       ctx.lineTo(x+5, y+5);
+       ctx.lineTo(x+15, y+15);
+
+       ctx.fill();
+       ctx.restore();
+
+       ctx.font= '12 Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText(text +' % ', x-(textWidth/2), y-11);
+      ctx.restore();
+
+      }
+
+  }
+ }
+
+  var cxprt =  new Chart(ctx2_dg, {
+  type: 'doughnut',
+  data: {labels:["Barren", "Productive"], datasets:[{
+    data: [(100-non_prod_1), non_prod_1],
+    backgroundColor: [
+      'rgb(244, 67, 53)',
+      'rgb(102, 187, 106)'
+    ],
+    hoverOffset: 4
+  }]  },
+  options: {
+
+    responsive: true,
+    maintainAspectRatio: false,
+    color: 'rgba(255, 255, 255, .2)',
+    plugins: {
+      tooltip: { enabled: true,},
+      legend: {
+
+        display: false,
+
+      },
+
+
+    }
+  },plugins: [alwaysShowTooltip]
+});
+
+
+ var ctx2_dg = document.getElementById("chart-bars-activity").getContext("2d");
+    var cxprt =  new Chart(ctx2_dg, {
+  type: 'doughnut',
+  data: {labels:["Barren", "Productive"], datasets:[{
+    data: [(100-non_prod), non_prod],
+    backgroundColor: [
+      'rgb(244, 67, 53)',
+      'rgb(102, 187, 106)'
+    ],
+    hoverOffset: 4
+  }]  },
+  options: {
+
+    responsive: true,
+    maintainAspectRatio: false,
+    color: 'rgba(255, 255, 255, .2)',
+    plugins: {
+      tooltip: { enabled: true,},
+      legend: {
+
+        display: false,
+
+      },
+
+
+    }
+  },plugins: [alwaysShowTooltip]
+});
 
 
     var timedata = new Chart(ctx, {
@@ -695,7 +896,7 @@ contentType: "application/json",
 dataType: "json",
 success: function(response) {
 
-    console.log(response)
+
     var ctx = document.getElementById("chart-bars-shipping").getContext("2d");
 
     firstShipping = response['result']['pretime'];
@@ -755,8 +956,7 @@ success: function(response) {
 
         }
     }
-    console.log(lab)
-    console.log(response)
+
 
 
     var dataset = [{
@@ -914,6 +1114,7 @@ success: function(response) {
             },
         },
     });
+
 
      var ctx = document.getElementById("chart-bars-warehouse").getContext("2d");
     customers = Object.values(customers);
@@ -1327,21 +1528,27 @@ function chartLineDataAdd() {
       weekTotal = 0;
       var yesterday_total;
       yesterday_total = 0;
+      var pre_yesterday_total;
+      pre_yesterday_total = 0;
       var high_volume;
       high_volume = 0;
       removeLoop = 0;
+      var hrCount;
+      hrCount = [];
       for(xp = 6; xp >=0; xp--) {
-      if (yesterday_total>0 && removeLoop==0) {
-      removeLoop = 1
-      }
+        if (yesterday_total>0 && removeLoop==0) {
+          removeLoop = 1
+        }
       for(x = 0; x <=23; x++) {
-          console.log(xp);
-
           weekTotal = timeIntervalCount[lab[xp]][x] + weekTotal;
 
           if(removeLoop == 0) {
+
           if (xp !=6){ $('#yes_shipment').html(lab[xp]); }
           yesterday_total = timeIntervalCount[lab[xp]][x] + yesterday_total;
+
+          pre_yesterday_total = timeIntervalCount[lab[xp-1]][x] + pre_yesterday_total;
+          hrCount.push(timeIntervalCount[lab[xp]][x]);
           if (high_volume <  timeIntervalCount[lab[xp]][x]) {
               high_volume = timeIntervalCount[lab[xp]][x];
 
@@ -1350,9 +1557,51 @@ function chartLineDataAdd() {
         }
       }
 
+
+  let max = -Infinity, result = -Infinity;
+
+  for (const value of hrCount) {
+    const nr = Number(value)
+
+    if (nr > max) {
+      [result, max] = [max, nr] // save previous max
+    } else if (nr < max && nr > result) {
+      result = nr; // new second biggest
+    }
+  }
+
+
+
+
       $('#week_shipment').html(weekTotal);
+      var diff_number  = (weekTotal-last_week_count)
+      if(diff_number > 0){
+        $('#last_week_count').addClass("text-success");
+      } else {
+        $('#last_week_count').addClass("text-danger");
+      }
+      $('#last_week_count').html(Math.round((diff_number/last_week_count)*100)+'% ');
       $('#yesterday_total').html(yesterday_total);
       $('#high_volume').html(high_volume);
+      var diff_number  = (yesterday_total-pre_yesterday_total)
+      if(diff_number > 0){
+        $('#pre_yesterday_count').addClass("text-success");
+      } else {
+        $('#pre_yesterday_count').addClass("text-danger");
+      }
+      $('#pre_yesterday_count').html(Math.round((diff_number/pre_yesterday_total)*100)+'% ');
+
+      var diff_number  = (high_volume-result)
+      if(diff_number > 0){
+        $('#last_volume_highest').addClass("text-success");
+      } else {
+        $('#last_volume_highest').addClass("text-danger");
+      }
+      $('#last_volume_highest').html(Math.round((diff_number/high_volume)*100)+'% ');
+
+
+
+
 
 
 
@@ -1362,7 +1611,6 @@ var ctx2 = document.getElementById("chart-doughnut").getContext("2d");
 var newcolor = [] ;
 var newLab = [] ;
     var pp = 0;
-console.log(color[0])
 var pp=0;
 for (x = 0 ;x <= 23; x++) {
          var sum = 0;
@@ -1378,63 +1626,118 @@ for (x = 0 ;x <= 23; x++) {
      }
 
 
-
+var xpop = 0;
  var data = {
   labels: newLab,
   datasets: []
 };
+ const alwaysShowTooltip = {
+  id: 'alwaysShowTooltip ',
+  afterDraw(chart, args, options){
 
-   var cxprt =  new Chart(ctx2, {
-  type: 'doughnut',
-  data: {labels:newLab},
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    color: 'rgba(255, 255, 255, .2)',
-    plugins: {
-      legend: {
-        position: false,
-        title: {
-                display: true,
-                text: 'Custom Chart Title'
-            }
-      },
 
-    }
-  },
-});
+    const { ctx } = chart;
+      ctx.save();
+       for (gx = 0 ;gx <= 23; gx++) {
+      const {x, y} = chart.getDatasetMeta(0).data[gx].tooltipPosition();
 
-var newDataset = {
-        label: 'Hrs',
-        backgroundColor: newcolor,
-        borderWidth: 0,
-        tension: 0,
-      };
-      cxprt.data.datasets.push(newDataset);
-      cxprt.update();
+      const text = chart.data.labels[gx]+':'+chart.data.datasets[0].data[gx];
+      const   textWidth = ctx.measureText(text).width;
+      ctx.fillStyle= 'rgb(0, 0, 0, 0.8)';
+      width = 20;
+      ctx.fillRect (x - (textWidth+10)/2, y- 25, textWidth+10,20)
 
-    console.log(cxprt.data.datasets[0]);
+       ctx.beginPath();
+       ctx.moveTo(x, y);
+       ctx.lineTo(x+5, y+5);
+       ctx.lineTo(x+15, y+15);
+       ctx.fill();
+       ctx.restore();
 
-    var newcolor = [] ;
+       ctx.font= '12 Arial';
+      ctx.fillStyle = 'white';
+      ctx.fillText(text, x-(textWidth/2), y-11);
+      ctx.restore();
+
+ xpop = xpop + 1;
+      }
+<!--      chart.data.datasets.forEach(dataset, i) => {-->
+<!--       chart.getDatasetMeta(i).data.forEach(datapoint, index) => {-->
+<!--       })-->
+<!--       })-->
+  }
+ }
+
     var pp = 0;
+    lab_data = [];
+    data_set = [];
     for (x = 0 ;x <= 23; x++) {
          var sum = 0;
         for(xp = 0; xp <=6; xp++) {
         sum = sum + timeIntervalCount[lab[xp]][x];
 
          }
-          cxprt.data.labels.push(x + 'Hr');
-         cxprt.data.datasets[0].data.push(sum);
-         if(sum > 0 ){
-         newcolor[pp] = color[x];
-         pp = pp + 1;
-         }
-         cxprt.update();
+          lab_data.push(x + 'Hr');
+         data_set.push(sum);
+
      }
+
+   var cxprt =  new Chart(ctx2, {
+  type: 'doughnut',
+  data: {labels:lab_data, datasets:[{
+    label: 'My First Dataset',
+    data: data_set,
+    backgroundColor: [
+      'rgb(255, 99, 132)',
+      'rgb(54, 162, 235)',
+      'rgb(0, 205, 86)',
+      'rgb(255, 205, 86)',
+      'rgb(255, 2, 86)',
+      'rgb(26, 205, 86)',
+      'rgb(255, 100, 86)',
+      'rgb(150, 45, 255)',
+      'rgb(255, 255, 86)',
+      'rgb(100, 255, 86)',
+      'rgb(255, 0, 0)',
+      'rgb(255, 125, 255)',
+      'rgb(255, 75, 120)',
+      'rgb(0, 200, 86)',
+      'rgb(255, 150, 86)',
+      'rgb(100, 150, 36)',
+      'rgb(200, 100, 0)',
+      'rgb(255, 100, 86)',
+      'rgb(255, 45, 30)',
+      'rgb(12, 205, 86)',
+      'rgb(255, 0, 86)',
+      'rgb(25, 205, 86)',
+      'rgb(255, 22, 86)',
+      'rgb(255, 3, 86)'
+    ],
+    hoverOffset: 4
+  }]  },
+  options: {
+
+    responsive: true,
+    maintainAspectRatio: false,
+    color: 'rgba(255, 255, 255, .2)',
+    plugins: {
+      tooltip: { enabled: true,},
+      legend: {
+
+        display: false,
+
+      },
+
+
+    }
+  },plugins: [alwaysShowTooltip]
+});
 
 
 
 }
+
+
 
 
 });
