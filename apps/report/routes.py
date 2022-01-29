@@ -111,8 +111,8 @@ def report_shipping():
         current_time = datetime.fromtimestamp(stationstarttime).strftime('%H')
 
         hrShippingCount[dt_obj][int(current_time)] = hrShippingCount[dt_obj][int(current_time)] + 1
-        if pretime[dt_obj] < int(station[3]) or pretime[dt_obj] == 0:
-            pretime[dt_obj] = int(station[3])
+        if pretime[dt_obj] < int(stationstarttime) or pretime[dt_obj] == 0:
+            pretime[dt_obj] = int(stationstarttime)
         if int(station[2]) < 60:
             p_time = time_report[dt_obj]["0-1"]
             time_report_count[dt_obj]["0-1"] = int(time_report_count[dt_obj]["0-1"]) + 1
