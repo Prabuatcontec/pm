@@ -10,6 +10,18 @@ $(document).ready(function() {
     var total_wrk_hrs;
     var last_shipping_active;
 
+    var lab = []
+    var lab_num = []
+    for (var da = 6; da >= 0; da--) {
+        var date = new Date();
+        date.setDate(date.getDate() - da);
+
+        var finalDate = ("0" + date.getDate()).slice(-2) + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
+        var finalDateNum = ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2);
+        lab.push(finalDate)
+        lab_num.push(finalDateNum)
+    }
+
 
 var color = {0:'#ffffff',
               1:'#ffffff',
@@ -77,109 +89,109 @@ var color = {0:'#ffffff',
 
 
 
-            var ctx2 = document.getElementById("chart-line-shipping").getContext("2d");
-
-            new Chart(ctx2, {
-                type: "line",
-                data: {
-                    labels: lab_num,
-                    datasets: [{
-                        label: "Boxing area",
-                        tension: 0,
-                        borderWidth: 0,
-                        pointRadius: 5,
-                        pointBackgroundColor: "rgba(255, 255, 255, .6)",
-                        pointBorderColor: "transparent",
-                        borderColor: "rgba(255, 255, 255, .6)",
-                        borderColor: "rgba(255, 255, 255, .6)",
-                        borderWidth: 4,
-                        backgroundColor: "transparent",
-                        fill: true,
-                        data: [response['result']['time_report_hrs'][lab[0]]['1-2'], response['result']['time_report_hrs'][lab[1]]['1-2'], response['result']['time_report_hrs'][lab[2]]['1-2'], response['result']['time_report_hrs'][lab[3]]['1-2'], response['result']['time_report_hrs'][lab[4]]['1-2'], response['result']['time_report_hrs'][lab[5]]['1-2'], response['result']['time_report_hrs'][lab[6]]['1-2']],
-                        maxBarThickness: 6,
-                        hoverOffset: 4
-
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    var label = context.dataset.label || '';
-
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += parseInt(context.parsed.y) + ' min';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                    scales: {
-                        y: {
-                            grid: {
-                                drawBorder: false,
-                                display: true,
-                                drawOnChartArea: true,
-                                drawTicks: false,
-                                borderDash: [5, 5],
-                                color: 'rgba(255, 255, 255, .2)'
-                            },
-                            ticks: {
-                                display: true,
-                                color: '#f8f9fa',
-                                callback: function(label, index, labels) {
-                                    return label + ' min';
-
-                                    // return _label;
-                                },
-                                padding: 10,
-                                font: {
-                                    size: 14,
-                                    weight: 300,
-                                    family: "Roboto",
-                                    style: 'normal',
-                                    lineHeight: 2
-                                },
-                            }
-                        },
-                        x: {
-                            grid: {
-                                drawBorder: false,
-                                display: false,
-                                drawOnChartArea: false,
-                                drawTicks: false,
-                                borderDash: [5, 5]
-                            },
-                            ticks: {
-                                display: true,
-                                color: '#f8f9fa',
-                                padding: 10,
-                                font: {
-                                    size: 14,
-                                    weight: 300,
-                                    family: "Roboto",
-                                    style: 'normal',
-                                    lineHeight: 2
-                                },
-                            }
-                        },
-                    },
-                },
-            });
+//            var ctx2 = document.getElementById("chart-line-shipping").getContext("2d");
+//
+//            new Chart(ctx2, {
+//                type: "line",
+//                data: {
+//                    labels: lab_num,
+//                    datasets: [{
+//                        label: "Boxing area",
+//                        tension: 0,
+//                        borderWidth: 0,
+//                        pointRadius: 5,
+//                        pointBackgroundColor: "rgba(255, 255, 255, .6)",
+//                        pointBorderColor: "transparent",
+//                        borderColor: "rgba(255, 255, 255, .6)",
+//                        borderColor: "rgba(255, 255, 255, .6)",
+//                        borderWidth: 4,
+//                        backgroundColor: "transparent",
+//                        fill: true,
+//                        data: [response['result']['time_report_hrs'][lab[0]]['1-2'], response['result']['time_report_hrs'][lab[1]]['1-2'], response['result']['time_report_hrs'][lab[2]]['1-2'], response['result']['time_report_hrs'][lab[3]]['1-2'], response['result']['time_report_hrs'][lab[4]]['1-2'], response['result']['time_report_hrs'][lab[5]]['1-2'], response['result']['time_report_hrs'][lab[6]]['1-2']],
+//                        maxBarThickness: 6,
+//                        hoverOffset: 4
+//
+//                    }],
+//                },
+//                options: {
+//                    responsive: true,
+//                    maintainAspectRatio: false,
+//                    plugins: {
+//                        legend: {
+//                            display: false,
+//                        },
+//                        tooltip: {
+//                            callbacks: {
+//                                label: function(context) {
+//                                    var label = context.dataset.label || '';
+//
+//                                    if (label) {
+//                                        label += ': ';
+//                                    }
+//                                    if (context.parsed.y !== null) {
+//                                        label += parseInt(context.parsed.y) + ' min';
+//                                    }
+//                                    return label;
+//                                }
+//                            }
+//                        }
+//                    },
+//                    interaction: {
+//                        intersect: false,
+//                        mode: 'index',
+//                    },
+//                    scales: {
+//                        y: {
+//                            grid: {
+//                                drawBorder: false,
+//                                display: true,
+//                                drawOnChartArea: true,
+//                                drawTicks: false,
+//                                borderDash: [5, 5],
+//                                color: 'rgba(255, 255, 255, .2)'
+//                            },
+//                            ticks: {
+//                                display: true,
+//                                color: '#f8f9fa',
+//                                callback: function(label, index, labels) {
+//                                    return label + ' min';
+//
+//                                    // return _label;
+//                                },
+//                                padding: 10,
+//                                font: {
+//                                    size: 14,
+//                                    weight: 300,
+//                                    family: "Roboto",
+//                                    style: 'normal',
+//                                    lineHeight: 2
+//                                },
+//                            }
+//                        },
+//                        x: {
+//                            grid: {
+//                                drawBorder: false,
+//                                display: false,
+//                                drawOnChartArea: false,
+//                                drawTicks: false,
+//                                borderDash: [5, 5]
+//                            },
+//                            ticks: {
+//                                display: true,
+//                                color: '#f8f9fa',
+//                                padding: 10,
+//                                font: {
+//                                    size: 14,
+//                                    weight: 300,
+//                                    family: "Roboto",
+//                                    style: 'normal',
+//                                    lineHeight: 2
+//                                },
+//                            }
+//                        },
+//                    },
+//                },
+//            });
 
 
 
@@ -198,21 +210,6 @@ var color = {0:'#ffffff',
                 var ctx = document.getElementById("chart-bars").getContext("2d");
 
                 firstMotion = response['result']['pretime'];
-
-
-                var lab = []
-                var lab_num = []
-                for (var da = 6; da >= 0; da--) {
-                    var date = new Date();
-                    date.setDate(date.getDate() - da);
-
-                    var finalDate = ("0" + date.getDate()).slice(-2) + '-' + ("0" + (date.getMonth() + 1)).slice(-2) + '-' + date.getFullYear();
-                    var finalDateNum = ("0" + (date.getMonth() + 1)).slice(-2) + '/' + ("0" + date.getDate()).slice(-2);
-                    lab.push(finalDate)
-                    lab_num.push(finalDateNum)
-                }
-
-
                 var yesterday;
                 for (so = 0; so <= 6; so++) {
                     if (so == 5) {
@@ -345,38 +342,45 @@ var color = {0:'#ffffff',
                         }
                     }
                     if (p == 1) {
-                        total_hours = total_hours + (3600 * 7);
+                        total_hours = total_hours + (3600 * 5.5);
                     }
 
                 }
+
                 var diff_number = (total_hours - total_wrk_hrs)
 
 
-                var non_prod = Math.round((total_wrk_hrs / diff_number) * 100);
+                var non_prod = Math.round((diff_number/ total_wrk_hrs ) * 100);
+
                 var s = 0;
                 var processDate = 'Yesterday';
                 var processDate_Count;
                 processDate_Count = 0;
-                for (var da = 6; da >= 0; da--) {
+                for (var da = 5; da >= 0; da--) {
+
                     if (yesterday_hrs[lab[da]] > 0 && s == 0) {
                         processDate = lab[da];
                         const d = new Date();
                         let day = d.getDay();
-                        if (day = 1) {
+
+                        if (day == 1) {
 
                             processDate_Count = yesterday_hrs[lab[3]];
                         } else {
                             processDate_Count = yesterday_hrs[lab[da]];
+
+                            if (processDate_Count == 0) {
+                                processDate_Count = yesterday_hrs[lab[da-1]];
+                            }
                         }
                         s = s + 1;
                     }
                 }
-                console.log(processDate_Count / 60);
 
                 var diff_number_1 = ((3600 * 7) - processDate_Count)
-                console.log(diff_number_1)
 
-                var non_prod_1 = Math.round((diff_number_1 / processDate_Count) * 100);
+                var non_prod_1 = Math.round((processDate_Count/diff_number_1) * 100);
+
 
                 var ctx2_dg = document.getElementById("chart-line-activity").getContext("2d");
 
@@ -426,7 +430,7 @@ var color = {0:'#ffffff',
                     data: {
                         labels: ["Barren", "Productive"],
                         datasets: [{
-                            data: [(100 - non_prod_1), non_prod_1],
+                            data: [ non_prod_1, (100 - non_prod_1)],
                             backgroundColor: [
                                 'rgb(244, 67, 53)',
                                 'rgb(102, 187, 106)'
@@ -611,6 +615,8 @@ var color = {0:'#ffffff',
                     shippingCusCount = response['result']['shipping_cus_count']
                     warehouses = response['result']['warehouses']
                     customers = response['result']['customers']
+
+                    console.log(response)
 
 
 
@@ -818,6 +824,166 @@ var color = {0:'#ffffff',
                         },
                     });
 
+                    var ctx2 = document.getElementById("chart-line-shipping").getContext("2d");
+                    var dataset = [{
+                        label: "0-1",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(255,69,0, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['0-1'], response['result']['time_report_count'][lab[1]]['0-1'], response['result']['time_report_count'][lab[2]]['0-1'], response['result']['time_report_count'][lab[3]]['0-1'], response['result']['time_report_count'][lab[4]]['0-1'], response['result']['time_report_count'][lab[5]]['0-1'], response['result']['time_report_count'][lab[6]]['0-1']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "1-2",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(255,215,0, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['1-2'], response['result']['time_report_count'][lab[1]]['1-2'], response['result']['time_report_count'][lab[2]]['1-2'], response['result']['time_report_count'][lab[3]]['1-2'], response['result']['time_report_count'][lab[4]]['1-2'], response['result']['time_report_count'][lab[5]]['1-2'], response['result']['time_report_count'][lab[6]]['1-2']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "2-3",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(100, 155, 200, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['2-3'], response['result']['time_report_count'][lab[1]]['2-3'], response['result']['time_report_count'][lab[2]]['2-3'], response['result']['time_report_count'][lab[3]]['2-3'], response['result']['time_report_count'][lab[4]]['2-3'], response['result']['time_report_count'][lab[5]]['2-3'], response['result']['time_report_count'][lab[6]]['2-3']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "3-5",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(0, 200, 200, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['3-5'], response['result']['time_report_count'][lab[1]]['3-5'], response['result']['time_report_count'][lab[2]]['3-5'], response['result']['time_report_count'][lab[3]]['3-5'], response['result']['time_report_count'][lab[4]]['3-5'], response['result']['time_report_count'][lab[5]]['3-5'], response['result']['time_report_count'][lab[6]]['3-5']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "5-10",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(204,0,0, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['5-10'], response['result']['time_report_count'][lab[1]]['5-10'], response['result']['time_report_count'][lab[2]]['5-10'], response['result']['time_report_count'][lab[3]]['5-10'], response['result']['time_report_count'][lab[4]]['5-10'], response['result']['time_report_count'][lab[5]]['5-10'], response['result']['time_report_count'][lab[6]]['5-10']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "10-15",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(102,0,51, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['10-15'], response['result']['time_report_count'][lab[1]]['10-15'], response['result']['time_report_count'][lab[2]]['10-15'], response['result']['time_report_count'][lab[3]]['10-15'], response['result']['time_report_count'][lab[4]]['10-15'], response['result']['time_report_count'][lab[5]]['10-15'], response['result']['time_report_count'][lab[6]]['10-15']],
+                        maxBarThickness: 10
+                    }, {
+                        label: "15-60",
+                        tension: 0.8,
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        borderSkipped: false,
+                        backgroundColor: "rgba(255,153,51, .6)",
+                        data: [response['result']['time_report_count'][lab[0]]['15-60'], response['result']['time_report_count'][lab[1]]['15-60'], response['result']['time_report_count'][lab[2]]['15-60'], response['result']['time_report_count'][lab[3]]['15-60'], response['result']['time_report_count'][lab[4]]['15-60'], response['result']['time_report_count'][lab[5]]['15-60'], response['result']['time_report_count'][lab[6]]['15-60']],
+                        maxBarThickness: 10
+                    }];
+                    var timedata = new Chart(ctx2, {
+                        type: "bar",
+                        data: {
+                            labels: lab_num,
+                            datasets: dataset,
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            var label = context.dataset.label || '';
+
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.y !== null) {
+                                                label += parseInt(context.parsed.y) + '';
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index',
+                            },
+                            scales: {
+                                y: {
+                                    stacked: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        display: true,
+                                        drawOnChartArea: true,
+                                        drawTicks: false,
+                                        borderDash: [5, 5],
+                                        color: 'rgba(255, 255, 255, .2)'
+                                    },
+                                    ticks: {
+                                        suggestedMin: 0,
+                                        suggestedMax: 500,
+                                        beginAtZero: true,
+                                        padding: 10,
+                                        font: {
+                                            size: 14,
+                                            weight: 300,
+                                            family: "Roboto",
+                                            style: 'normal',
+                                            lineHeight: 2
+                                        },
+                                        color: "#fff",
+                                        callback: function(label, index, labels) {
+                                            return label + '';
+
+                                            // return _label;
+                                        }
+                                    },
+                                },
+                                x: {
+                                    stacked: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        display: true,
+                                        drawOnChartArea: true,
+                                        drawTicks: false,
+                                        borderDash: [5, 5],
+                                        color: 'rgba(255, 255, 255, .2)',
+
+                                    },
+                                    ticks: {
+                                        display: true,
+                                        color: '#f8f9fa',
+                                        padding: 10,
+                                        font: {
+                                            size: 14,
+                                            weight: 300,
+                                            family: "Roboto",
+                                            style: 'normal',
+                                            lineHeight: 2
+                                        }
+                                    }
+                                },
+                            },
+                        },
+                    });
+
+
+
+
 
                     var ctx = document.getElementById("chart-bars-warehouse").getContext("2d");
                     customers = Object.values(customers);
@@ -987,7 +1153,7 @@ var color = {0:'#ffffff',
                     borderWidth: 4,
                     backgroundColor: "transparent",
                     fill: true,
-                    data: [parseInt(firstMotion[lab[0]] - firstShipping[lab[0]]) / 60, parseInt(firstMotion[lab[1]] - firstShipping[lab[1]]) / 60, parseInt(firstMotion[lab[2]] - firstShipping[lab[2]]) / 60, parseInt(firstMotion[lab[3]] - firstShipping[lab[3]]) / 60, parseInt(firstMotion[lab[4]] - firstShipping[lab[4]]) / 60, parseInt(firstMotion[lab[5]] - firstShipping[lab[5]]) / 60, parseInt(firstMotion[lab[6]] - firstShipping[lab[6]]) / 60],
+                    data: [parseInt(firstShipping[lab[0]] - firstMotion[lab[0]]) / 60, parseInt(firstShipping[lab[1]] - firstMotion[lab[1]]) / 60, parseInt(firstShipping[lab[2]] - firstMotion[lab[2]]) / 60, parseInt(firstShipping[lab[3]] - firstMotion[lab[3]] ) / 60, parseInt(firstShipping[lab[4]] - firstMotion[lab[4]] ) / 60, parseInt(firstShipping[lab[5]]- firstMotion[lab[5]] ) / 60, parseInt(firstShipping[lab[6]] - firstMotion[lab[6]] ) / 60],
                     maxBarThickness: 6,
                     hoverOffset: 4
 
@@ -1318,6 +1484,89 @@ var color = {0:'#ffffff',
             $('#last_volume_highest').addClass("text-danger");
         }
         $('#last_volume_highest').html(Math.round((diff_number / high_volume) * 100) + '% ');
+
+        var diff_number_1 = ((150 * 7 * 5.5) - weekTotal)
+
+
+        var non_prod_1 = Math.round((weekTotal/diff_number_1) * 100);
+
+
+        var ctx2_dg = document.getElementById("chart-line-activity-Shipping").getContext("2d");
+
+
+        const alwaysShowTooltipadded = {
+            id: 'alwaysShowTooltipadded ',
+            afterDraw(chart, args, options) {
+
+
+                const {
+                    ctx
+                } = chart;
+                ctx.save();
+                for (gx = 0; gx <= 1; gx++) {
+                    const {
+                        x,
+                        y
+                    } = chart.getDatasetMeta(0).data[gx].tooltipPosition();
+
+                    const text = chart.data.labels[gx] + ':' + chart.data.datasets[0].data[gx];
+                    const textWidth = ctx.measureText(text).width + 10;
+
+                    ctx.fillStyle = 'rgb(0, 0, 0, 0.8)';
+                    width = 20;
+                    ctx.fillRect(x - (textWidth + 10) / 2, y - 25, textWidth + 10, 20)
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + 5, y + 5);
+                    ctx.lineTo(x + 15, y + 15);
+
+                    ctx.fill();
+                    ctx.restore();
+
+                    ctx.font = '12 Arial';
+                    ctx.fillStyle = 'white';
+                    ctx.fillText(text + ' % ', x - (textWidth / 2), y - 11);
+                    ctx.restore();
+
+                }
+
+            }
+        }
+
+        var cxprt = new Chart(ctx2_dg, {
+            type: 'doughnut',
+            data: {
+                labels: ["Barren", "Productive"],
+                datasets: [{
+                    data: [ non_prod_1, (100 - non_prod_1)],
+                    backgroundColor: [
+                        'rgb(244, 67, 53)',
+                        'rgb(102, 187, 106)'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+                color: 'rgba(255, 255, 255, .2)',
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                    },
+                    legend: {
+
+                        display: false,
+
+                    },
+
+
+                }
+            },
+            plugins: [alwaysShowTooltipadded]
+        });
 
 
 
