@@ -468,7 +468,7 @@ var color = {0:'#ffffff',
                     data: {
                         labels: ["Barren", "Productive"],
                         datasets: [{
-                            data: [(100 - non_prod), non_prod],
+                            data: [ non_prod, (100 - non_prod)],
                             backgroundColor: [
                                 'rgb(244, 67, 53)',
                                 'rgb(102, 187, 106)'
