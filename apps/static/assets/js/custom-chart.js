@@ -341,6 +341,7 @@ var color = {0:'#ffffff',
                             }
                         }
                     }
+
                     if (p == 1) {
                         total_hours = total_hours + (3600 * 5.5);
                     }
@@ -348,9 +349,10 @@ var color = {0:'#ffffff',
                 }
 
                 var diff_number = (total_hours - total_wrk_hrs)
+                console.log(total_hours)
+                console.log(total_wrk_hrs)
 
-
-                var non_prod = Math.round((diff_number/ total_wrk_hrs ) * 100);
+                var non_prod = Math.round((total_wrk_hrs/ total_hours ) * 100);
 
                 var s = 0;
                 var processDate = 'Yesterday';
@@ -379,7 +381,7 @@ var color = {0:'#ffffff',
 
                 var diff_number_1 = ((3600 * 7) - processDate_Count)
 
-                var non_prod_1 = Math.round((processDate_Count/diff_number_1) * 100);
+                var non_prod_1 = Math.round((processDate_Count/(3600 * 7)) * 100);
 
 
                 var ctx2_dg = document.getElementById("chart-line-activity").getContext("2d");
@@ -616,7 +618,6 @@ var color = {0:'#ffffff',
                     warehouses = response['result']['warehouses']
                     customers = response['result']['customers']
 
-                    console.log(response)
 
 
 
