@@ -18,7 +18,7 @@ import cv2
 import threading
 import schedule
 
-
+print(cv2.__version__)
 
 def maintenance():
     print("waiting...") 
@@ -131,8 +131,8 @@ def capture_motion(motion):
 # define a video capture object
 vid = cv2.VideoCapture("rtsp://admin:3J7Bm!j@@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
 day1 = 0
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-out = cv2.VideoWriter('outputtoday.mp4',fourcc, 20.0, (640,480))
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('outputtoday.avi',fourcc, 20.0, (640,480))
 while(True):
       
     # Capture the video frame
@@ -149,7 +149,7 @@ while(True):
     blur = cv2.GaussianBlur(diff_gray, (5, 5), 0)
     _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
     dilated = cv2.dilate(thresh, None, iterations=3)
-    _, contours, _ = cv2.findContours(
+    contours, _ = cv2.findContours(
         dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     movementPoints = []
     for contour in contours:
