@@ -127,88 +127,101 @@ def capture_motion(motion):
                 # cur.close()
                 #print()
                 stationMotions[motion] = ts
-  
+
+def get_correct_path(relative_path):
+    p = os.path.abspath(".").replace('/dist', "")
+    return os.path.join(p, relative_path)
 # define a video capture object
-vid = cv2.VideoCapture("rtsp://admin:3J7Bm!j@@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
-day1 = 0
+from vidgear.gears import WriteGear
+cap = cv2.VideoCapture("rtsp://admin:3J7Bm!j@@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1")
+import cv2
+import numpy as np
+import os
+import time
+import random
+from os.path import isfile, join
+img_array = []
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter('outputtoday.avi',fourcc, 20.0, (640,480))
-while(True):
-      
-    # Capture the video frame
-    # by frame
-    ret, frame = vid.read()
-    frame = cv2.resize(frame, (1100, 700), interpolation=cv2.INTER_AREA)
-    if day1 == 0:
-        frame2 = frame
+out = cv2.VideoWriter('output222.avi', fourcc, 30.0, (800,480))
 
-    day1 = 1
-
-    diff = cv2.absdiff(frame,frame2)
-    diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(diff_gray, (5, 5), 0)
-    _, thresh = cv2.threshold(blur, 20, 255, cv2.THRESH_BINARY)
-    dilated = cv2.dilate(thresh, None, iterations=3)
-    contours, _ = cv2.findContours(
-        dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    movementPoints = []
-    for contour in contours:
-        (x, y, w, h) = cv2.boundingRect(contour)
-        if cv2.contourArea(contour) < 200 and cv2.contourArea(contour) > 500:
-            continue
-        movementPoints.append([x, y])
+pathIn= get_correct_path('static/')
+pathOut = get_correct_path('video.mp4')
+fps = 25.0
 
 
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 0), 2)
-        cv2.putText(frame, "Status: {}".format('Movement'), (20, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                1, (255, 0, 0), 3)
 
-    listStation = data = pickle.load(open("stationConfig.p", "rb"))
-    for station in listStation:
+# def convert_frames_to_video(pathIn,pathOut,fps):
+#     frame_array = []
+#     files = [f for f in os.listdir(pathIn) if isfile(join(pathIn, f))]
+#     #for sorting the file names properly
+#     #files.sort(key = lambda x: int(x[5:-4]))
+#     for i in range(len(files)):
+#         filename=pathIn + files[i]
+#         #reading each files
+#         img = cv2.imread(filename)
+#         print(filename)
+#         height, width, layers = img.shape
+#         size = (width,height)
+#         print(size)
+#         #inserting the frames into an image array
+#         frame_array.append(img)
+#     out = cv2.VideoWriter(pathOut,cv2.VideoWriter_fourcc(*'mp4v'), fps, size)
+#     for i in range(len(frame_array)):
+#         # writing to a image array
+#         out.write(frame_array[i])
+#     out.release()
 
+# convert_frames_to_video(pathIn, pathOut, fps)
 
-        arrayassign = []
-        i = 0
-        for key  in  station['location']:
-            arrayassign.append(station['location'][key])
-            i = i + 1
-        i = 0
-        oldX = 0
-        oldY = 0
-        #print(arrayassign)
-        for key in arrayassign:
+out = cv2.VideoWriter()
+out.open('output.mp4',fourcc,fps,(720,720),True)
+while cap.isOpened():
+    ret,image = cap.read()
 
-            if i != 0:
+    
 
-                cv2.rectangle(frame, (oldX, oldY),
-                            (key[0], key[1]), (0, 255, 0),
-                            thickness=1)
-
-                for point in movementPoints:
-                    #print(station['name'])
-                    #print(str(point[0])+'>'+str(oldX)+' and '+str(point[0])+'>'+str(oldX)+' or '+str(point[1])+'<'+str(key[0])+'and'+str(point[1])+'>'+str(key[1]))
-                    if (point[0] >= oldX and point[1] > oldY) and (point[0] <= key[0] and point[1] < key[1]):
-                        motions.append({station['name']:  time.time()})
-                        capture_motion(station['name'])
-            
-            i = i + 1
-            oldX = key[0]
-            oldY = key[1]
-
-
-        ret, frame2 = vid.read()
-        if ret:
-            frame2 = cv2.resize(frame2, (1100, 700), interpolation=cv2.INTER_AREA)
-        else:
-            frame2 = frame
-        framer = cv2.resize(frame2, (640, 480))
-        out.write(framer)
-        cv2.imshow("opencv", frame2)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if image is None: 
         break
-  
-# After the loop release the cap object
-vid.release()
-# Destroy all the windows
+    height, width = image.shape[:2]
+    mask = np.zeros((height, width), dtype=np.uint8)
+    points = np.array([[[305,80],[-100,493],[1123,513],[897,80],[700,80],[613,80]]])
+    cv2.fillPoly(mask, points, (255))
+    res = cv2.bitwise_and(image,image,mask = mask)
+
+    rect = cv2.boundingRect(points) # returns (x,y,w,h) of the rect
+    cropped = res[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
+
+    height2, width2 = res.shape[:2]
+
+    img_array.append(res)
+    for i in range(len(img_array)):
+        if img_array[i] is None:
+            break
+        out.write(img_array[i])
+        gmt = time.gmtime()
+        ts = calendar.timegm(gmt)
+        fillenameImage = str(str(ts)+'-'+str(random.randint(100000,999999)))
+        cv2.imwrite(get_correct_path("static/%s.png") % fillenameImage, image)
+        img = cv2.imread(get_correct_path("static/%s.png") % fillenameImage)
+        height, width, layers = (720,720,0)
+        size = (width,height)
+        
+        out.write(img)
+        
+        img_array = []
+        print('try')
+        
+cap.release()
+
 cv2.destroyAllWindows()
+
+#out = cv2.VideoWriter('hwyeni.mp4',cv2.VideoWriter_fourcc(-), 24, size)
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('output222.avi', fourcc, 30.0, (800,480))
+for i in range(len(img_array)):
+    if img_array[i] is None:
+       break
+    out.write(img_array[i])
+
+out.release()
+
