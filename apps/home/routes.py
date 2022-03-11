@@ -39,7 +39,7 @@ def route_template(template):
 
         # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment,
-                               form=station_form)
+                               form=station_form,file='Output.mp4')
 
 
     except TemplateNotFound:
