@@ -2,8 +2,11 @@
 from vidgear.gears import WriteGear
 import cv2
 import time
+import os
 
 from datetime import datetime
+import pytz
+other_tz = pytz.timezone('America/Los_Angeles')
 
 # datetime object containing current date and time
 
@@ -15,28 +18,49 @@ output_params = {"-vcodec":"libx264", "-crf": 0, "-preset": "fast"}
 stream = cv2.VideoCapture("rtsp://admin:3J7Bm!j@@10.10.153.21:8221/Streaming/Channels/102/picture?subtype=1") 
 
 # Define writer with defined parameters and suitable output filename for e.g. `Output.mp4`
-writer = WriteGear(output_filename = 'Output.mp4', logging = True, **output_params)
+
 
 
     # font
 font = cv2.FONT_HERSHEY_SIMPLEX
   
 # org
-org = (50, 50)
+org = (10, 50)
   
 # fontScale
-fontScale = 1
+fontScale = 0.5
    
 # Blue color in BGR
-color = (255, 0, 0)
+color = (255, 155, 0)
   
 # Line thickness of 2 px
 thickness = 2
 
+def get_correct_path(relative_path):
+    p = os.path.abspath(".").replace('/dist', "")
+    return os.path.join(p, relative_path)
 
+YEAR        = datetime.now().astimezone(other_tz).year
+MONTH       = datetime.now().astimezone(other_tz).month
+DATE        = datetime.now().astimezone(other_tz).day
+HOUR        = datetime.now().astimezone(other_tz).hour
+fpath = get_correct_path('apps/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
+if not os.path.exists(fpath):
+        exitfile = 1
+        os.makedirs(fpath)
+writer = WriteGear(output_filename = fpath+'/'+str(HOUR)+'.mp4', logging = True, **output_params)
 # loop over
 while True:
-
+    YEAR        = datetime.now().astimezone(other_tz).year
+    MONTH       = datetime.now().astimezone(other_tz).month
+    DATE        = datetime.now().astimezone(other_tz).day
+    HOUR        = datetime.now().astimezone(other_tz).hour
+    
+    fpath = get_correct_path('apps/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
+    exitfile = 0
+    if not os.path.exists(fpath):
+        exitfile = 1
+        os.makedirs(fpath)
     # read frames from stream
     (grabbed, frame) = stream.read()
 
@@ -61,7 +85,11 @@ while True:
                    fontScale, color, thickness, cv2.LINE_AA)
     
     # write gray frame to writer
-    writer.write(gray)
+    if exitfile == 0:
+      writer.write(gray)
+    else:
+      writer.close()
+      writer = WriteGear(output_filename = fpath+'/'+str(HOUR)+'.mp4', logging = True, **output_params)
 
     # Show output window
     cv2.imshow("Output Gray Frame", gray)
