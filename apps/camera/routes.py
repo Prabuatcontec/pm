@@ -26,6 +26,8 @@ def video_feed():
     return Response(stream_with_context(gen(VideoCamera())),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
+
 @blueprint.route('/station_feed')
 @login_required
 def station_feed():
