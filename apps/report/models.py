@@ -76,7 +76,40 @@ class motions(db.Model):
                   " and station_type= "+station_typ+" AND  (to_timestamp(timeadded) AT TIME ZONE 'PST') "
                     ">= current_date - 7  order by timeadded ) t where (timestamp_diff < 14400 "
                     "and timestamp_diff > 60) order by timestamp_diff desc)")
+        
+        stations = db.session.execute(qrl)
+        db.session.remove()
+        db.session.close()
+        db.session.commit()
+        return stations if stations else None
+    
+    def motion_loader_byarea_date(area, startdate,enddate ,day, warehous='1', station_typ='1', fromtime=14400, totime=60):
+        startdate = str(startdate)[:10]
+        enddate = str(enddate)[:10]
 
+        if int(day) == 1:
+            qrl = str("(select (select timeadded as  pretimestamp from motions where id < cid   and "
+                    " area =  '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
+                    " order by id desc limit 1),(select id as pre_id from "
+                    "motions where id < cid  and area = '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
+                    " order by id desc limit 1), "
+                        "cid, area,timeadded, timestamp_diff,warehouse,station_type from (select id as cid, area, "
+                    "timeadded, timeadded - lag(timeadded) "
+                    "over (order by timeadded) as timestamp_diff, "
+                    "(to_timestamp(timeadded - lag(timeadded) "
+                    "over (order by timeadded)/1000) AT TIME ZONE 'PST') "
+                    "as dd, (to_timestamp(timeadded - lag(timeadded) "
+                    "over (order by timeadded)/1000) AT TIME ZONE 'PST')::timestamp::date as "
+                    "ddate,warehouse,station_type from motions where area = '"+area+"' and warehouse= "+warehous+""
+                    " and station_type= "+station_typ+" AND   timeadded > "+str(startdate)+" and timeadded < "+str(enddate)+""
+                        "   order by timeadded ) t where (timestamp_diff < 14400 "
+                        "and timestamp_diff > 119) order by timestamp_diff desc)")
+        else:
+            qrl = str(" ( Select pre_timestamp, pre_id, cid, area, timeadded, time_difference,    warehouse, "
+                  "station_type from motionsgroup Where  "
+                  "   timeadded > "+str(startdate)+" and timeadded  < "+str(enddate)+" and area =  '"+area+"' and "
+                  " warehouse= "+warehous+" and station_type= "+station_typ+" order by time_difference desc ) ")
+        print(qrl)
         stations = db.session.execute(qrl)
         db.session.remove()
         db.session.close()

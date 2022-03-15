@@ -4,13 +4,31 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request, Response
+from flask import render_template, request, Response,session
 
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.camera.forms import StationForm
 from translate import Translator
+from datetime import datetime
+import os
+from apps.report.models import motions
 
+import pytz
+other_tz = pytz.timezone('US/Eastern')
+
+def get_correct_path(relative_path):
+    p = os.path.abspath(".").replace('/dist', "")
+    return os.path.join(p, relative_path)
+
+YEAR        = datetime.now().astimezone(other_tz).year
+MONTH       = datetime.now().astimezone(other_tz).month
+DATE        = datetime.now().astimezone(other_tz).day
+DATEDAY        = datetime.now().astimezone(other_tz).date
+HOUR        = datetime.now().astimezone(other_tz).hour
+print('------------------------------------------------')
+print(DATEDAY)
+fpath = get_correct_path('/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR-1))
 
 
 
@@ -35,11 +53,19 @@ def route_template(template):
         segment = get_segment(request)
         translator = Translator(to_lang="spanish")
         translation = translator.translate("Guten Morgen")
-        print (translation)
+        streamData = []
+        stationName = ''
+        if template == 'videos':
+            streamData = []
+        if session['search_station'] != '':
+            stationName = session['search_station']
+
+        #print(int(datetime.datetime.strptime('2019/12/3', '%Y/%m/%d').strftime("%s")))
+        
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment,
-                               form=station_form,file='Output.mp4')
+        return render_template("home/" + template, segment=segment,dateNow = str(YEAR)+'/'+str(MONTH)+'/'+str(DATE),
+                               form=station_form,file=fpath+'/'+str(HOUR-1)+'.mp4')
 
 
     except TemplateNotFound:

@@ -18,6 +18,96 @@ stationDis = {"Line1Station": "CLD-SHIP13", "Line2Station": "CLD-SHIP15", "Line3
               "Line4Station": "CLD-SHIP21"}
 
 
+
+
+@blueprint.route('/report/data/<startdate>/<enddate>/<day>')
+@login_required
+def reportdatesearch(startdate,enddate,day):
+    stationTime = motions.motion_loader_byarea_date(session['search_station'], startdate, enddate,day)
+    time_report_count = {}
+    time_report = {}
+    time_report_hrs = {}
+    time_report_time = {}
+    pretime = {}
+
+    station_all_day = {}
+    for station in stationTime:
+        stationstarttime = session['timedep'] + station[0]
+        stationendtime = session['timedep'] + station[4]
+        current_time = datetime.fromtimestamp(stationstarttime).strftime('%H:%M:%S')
+
+        dt_obj = datetime.fromtimestamp(stationstarttime).strftime('%d-%m-%Y')
+        # print(  current_time)
+        if is_between(current_time, ("07:00:00", "20:00:00")):
+            if dt_obj not in time_report_count:
+                time_report_count[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+                time_report[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+                time_report_hrs[dt_obj] = {"1-2": 0, "2-3": 0, "3-5": 0, "5-10": 0, "10-15": 0, "15-60": 0}
+                time_report_time[dt_obj] = {"1-2": [], "2-3": [], "3-5": [], "5-10": [], "10-15": [], "15-60": []}
+                pretime[dt_obj] = 0
+            if pretime[dt_obj] > int(stationstarttime) or pretime[dt_obj] == 0:
+                pretime[dt_obj] = int(stationstarttime)
+             
+            
+            
+
+            
+
+            
+
+            if 900 < station[5] <= 1000:
+                p_time = time_report[dt_obj]["15-60"]
+                time_report_count[dt_obj]["15-60"] = int(time_report_count[dt_obj]["15-60"]) + 1
+                time_report[dt_obj]["15-60"] = (int(p_time) + station[5])
+                time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
+                time_report_time[dt_obj]["15-60"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                          "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                          "diff": int(int(station[5])/60)})
+            if 600 < station[5] <= 900:
+                p_time = time_report[dt_obj]["10-15"]
+                time_report_count[dt_obj]["10-15"] = int(time_report_count[dt_obj]["10-15"]) + 1
+                time_report[dt_obj]["10-15"] = (int(p_time) + station[5])
+                time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
+                time_report_time[dt_obj]["10-15"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                          "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                          "diff": int(int(station[5])/60)})
+
+            if 300 < station[5] <= 600:
+                p_time = time_report[dt_obj]["5-10"]
+                time_report_count[dt_obj]["5-10"] = int(time_report_count[dt_obj]["5-10"]) + 1
+                time_report[dt_obj]["5-10"] = (int(p_time) + station[5])
+                time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
+                time_report_time[dt_obj]["5-10"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                         "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                         "diff": int(int(station[5])/60)})
+            if 180 < station[5] <= 300:
+                p_time = time_report[dt_obj]["3-5"]
+                time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
+                time_report[dt_obj]["3-5"] = (int(p_time) + station[5])
+                time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + station[5]))
+                time_report_time[dt_obj]["3-5"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                        "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                        "diff": int(int(station[5])/60)})
+            if 120 < station[5] <= 180:
+                p_time = time_report[dt_obj]["2-3"]
+                time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
+                time_report[dt_obj]["2-3"] = (int(p_time) + station[5])
+                time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + station[5]))
+                time_report_time[dt_obj]["2-3"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                        "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
+                                                        "diff": int(int(station[5])/60)})
+
+    # print(time_report_time)
+    station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
+                       "time_report_hrs": time_report_hrs, "pretime": pretime,"time_report_time":time_report_time}
+
+    result = {'result': station_all_day}
+
+    
+    return jsonify(result), 200
+
+
+
 @blueprint.route('/report/box')
 @login_required
 def report_box():
@@ -675,6 +765,9 @@ def report():
     pickle.dump(time_report_time, open(get_correct_path(session['search_station'] + "_data.p"), "wb"))
     pickle.dump(time_report_count, open(get_correct_path(session['search_station'] + "_data_count.p"), "wb"))
     return jsonify(result), 200
+
+
+
 
 
 def get_station_data(name):

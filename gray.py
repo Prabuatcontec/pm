@@ -6,7 +6,7 @@ import os
 
 from datetime import datetime
 import pytz
-other_tz = pytz.timezone('America/Los_Angeles')
+other_tz = pytz.timezone('US/Eastern')
 
 # datetime object containing current date and time
 
@@ -44,7 +44,7 @@ YEAR        = datetime.now().astimezone(other_tz).year
 MONTH       = datetime.now().astimezone(other_tz).month
 DATE        = datetime.now().astimezone(other_tz).day
 HOUR        = datetime.now().astimezone(other_tz).hour
-fpath = get_correct_path('apps/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
+fpath = get_correct_path('apps/static/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
 if not os.path.exists(fpath):
         exitfile = 1
         os.makedirs(fpath)
@@ -56,7 +56,7 @@ while True:
     DATE        = datetime.now().astimezone(other_tz).day
     HOUR        = datetime.now().astimezone(other_tz).hour
     
-    fpath = get_correct_path('apps/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
+    fpath = get_correct_path('apps/static/videos/'+str(YEAR)+str(MONTH)+str(DATE)+'/'+str(HOUR))
     exitfile = 0
     if not os.path.exists(fpath):
         exitfile = 1
@@ -72,9 +72,8 @@ while True:
     # lets convert frame to gray for this example
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    now = datetime.now()
+    now = datetime.now().astimezone(other_tz)
     
-    print("now =", now)
 
     # dd/mm/YY H:M:S
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
