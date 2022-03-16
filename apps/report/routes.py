@@ -20,6 +20,7 @@ stationDis = {"Line1Station": "CLD-SHIP13", "Line2Station": "CLD-SHIP15", "Line3
 
 
 
+
 @blueprint.route('/report/data/<startdate>/<enddate>/<day>')
 @login_required
 def reportdatesearch(startdate,enddate,day):
@@ -32,6 +33,8 @@ def reportdatesearch(startdate,enddate,day):
 
     station_all_day = {}
     for station in stationTime:
+        startTime = station[0]
+        endTime = station[4]
         stationstarttime = session['timedep'] + station[0]
         stationendtime = session['timedep'] + station[4]
         current_time = datetime.fromtimestamp(stationstarttime).strftime('%H:%M:%S')
@@ -62,7 +65,9 @@ def reportdatesearch(startdate,enddate,day):
                 time_report_hrs[dt_obj]["15-60"] = convert_time((int(p_time) + station[5]))
                 time_report_time[dt_obj]["15-60"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                           "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                                                          "diff": int(int(station[5])/60)})
+                                                          "diff": int(int(station[5])/60),
+                                                          "startTime":startTime,
+                                                          "endTime":endTime})
             if 600 < station[5] <= 900:
                 p_time = time_report[dt_obj]["10-15"]
                 time_report_count[dt_obj]["10-15"] = int(time_report_count[dt_obj]["10-15"]) + 1
@@ -70,7 +75,9 @@ def reportdatesearch(startdate,enddate,day):
                 time_report_hrs[dt_obj]["10-15"] = convert_time((int(p_time) + station[5]))
                 time_report_time[dt_obj]["10-15"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                           "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                                                          "diff": int(int(station[5])/60)})
+                                                          "diff": int(int(station[5])/60),
+                                                          "startTime":startTime,
+                                                          "endTime":endTime})
 
             if 300 < station[5] <= 600:
                 p_time = time_report[dt_obj]["5-10"]
@@ -79,7 +86,9 @@ def reportdatesearch(startdate,enddate,day):
                 time_report_hrs[dt_obj]["5-10"] = convert_time((int(p_time) + station[5]))
                 time_report_time[dt_obj]["5-10"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                          "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                                                         "diff": int(int(station[5])/60)})
+                                                         "diff": int(int(station[5])/60),
+                                                          "startTime":startTime,
+                                                          "endTime":endTime})
             if 180 < station[5] <= 300:
                 p_time = time_report[dt_obj]["3-5"]
                 time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
@@ -87,7 +96,9 @@ def reportdatesearch(startdate,enddate,day):
                 time_report_hrs[dt_obj]["3-5"] = convert_time((int(p_time) + station[5]))
                 time_report_time[dt_obj]["3-5"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                         "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                                                        "diff": int(int(station[5])/60)})
+                                                        "diff": int(int(station[5])/60),
+                                                          "startTime":startTime,
+                                                          "endTime":endTime})
             if 120 < station[5] <= 180:
                 p_time = time_report[dt_obj]["2-3"]
                 time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
@@ -95,7 +106,9 @@ def reportdatesearch(startdate,enddate,day):
                 time_report_hrs[dt_obj]["2-3"] = convert_time((int(p_time) + station[5]))
                 time_report_time[dt_obj]["2-3"].append({"from": datetime.fromtimestamp(int(stationstarttime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                         "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
-                                                        "diff": int(int(station[5])/60)})
+                                                        "diff": int(int(station[5])/60),
+                                                          "startTime":startTime,
+                                                          "endTime":endTime})
 
     # print(time_report_time)
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,
@@ -584,6 +597,18 @@ def is_between(time, time_range):
     if time_range[1] < time_range[0]:
         return time >= time_range[0] or time <= time_range[1]
     return time_range[0] <= time <= time_range[1]
+
+@blueprint.route('/report/tags')
+@login_required
+def report_shipping_tags():
+    stationTags = motions.actionin_shipping_data_tag(stationDis[session['search_station']])
+     
+    tags = {}
+    for tag in stationTags:
+        tags[tag[1]] = tag[0] 
+    result = {"result":tags}
+    return jsonify(result), 200
+    
 
 
 @blueprint.route('/report/shipping/customer')

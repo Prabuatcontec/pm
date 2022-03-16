@@ -36,13 +36,25 @@
 
                 <video width="100%" height="450" controls id="vido_src"> <source src="{{url_for('static', filename=file)}}" type="video/mp4"> </video> </div>
             </div>
-               <div class="container">
-                <div class="form-group">
-                  <label class="label-control">Date</label>
-                  <input type="date" id="mob-gig-date-gteq" name="trip-start"
-                  value="{{dateNow}}" data-date-format="DD MMMM YYYY" >
-                  <div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">Time Added</h6></div>
-                </div> 
+               <div class="form-group">
+                 
+                <div class="input-group input-group-outline mb-3"> 
+                  <input type="date" id="mob-gig-date-gteq" name="trip-start" class="form-control"
+                  value="{{dateNow}}" data-date-format="DD MMMM YYYY" > </div> 
+               
+                <div class="input-group input-group-outline mb-3"> <h6 class="mb-0 text-sm" id="time_added"></h6></div>
+                <div class="input-group input-group-outline mb-3"> <div class="form-group input-group input-group-outline mb-3" id="time_added_tag"></div> </div>
+                <div class="input-group input-group-outline mb-3">
+                  <button type="button" id="butt" width="20%" class="btn btn-primary" data-toggle="modal"   class="addTag" data-camera_blueprint="{{ url_for('camera_blueprint.add_episode_tag') }}" >
+                    Add Tag
+                  </button>
+                </div>
+                <input type="hidden" id="fromTime" />
+                <input type="hidden" id="toTime" />
+                <input type="hidden" id="station" />
+                <input type="hidden" id="choosendate" />
+              </div> 
+                
                 <div class="row">
                   <div class="col-12">
                     <div class="card my-4">

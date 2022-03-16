@@ -145,6 +145,16 @@ class motions(db.Model):
         db.session.remove()
         db.session.close()
         return qry
+    
+    def add_episode_tag(tag, station, starttime, endtime):
+        qry = ("INSERT INTO  episodetags (starttime, endtime, station, tag) VALUES ('"+starttime+"','"+endtime+"',"
+                "'"+station+"','"+tag+"') ")
+
+        db.session.execute(qry)
+        db.session.commit()
+        db.session.remove()
+        db.session.close()
+        return qry
 
     def get_cnt_lastweek(area):
         qry = str("SELECT DISTINCT(count(shipid)) as cnt FROM public.directshipping "
@@ -169,6 +179,16 @@ class motions(db.Model):
                   "(to_timestamp(EXTRACT (epoch  FROM  to_timestamp(scantime, 'YYYY-MM-DD hh24:mi:ss')::timestamp)) "
                   "AT TIME ZONE 'PST') >= current_date - 7 order by id desc ) t  "
                   "where  (timestamp_diff > 0 ) order by scantimee  desc")
+
+        box_cnt = db.session.execute(qry)
+        db.session.remove()
+        db.session.close()
+        db.session.commit()
+        return box_cnt if box_cnt else None
+    
+
+    def actionin_shipping_data_tag(area):
+        qry = str("Select id,tagname from tags")
 
         box_cnt = db.session.execute(qry)
         db.session.remove()
