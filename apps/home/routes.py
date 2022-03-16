@@ -57,8 +57,7 @@ def route_template(template):
         stationName = ''
         if template == 'videos':
             streamData = []
-        if session['search_station'] != '':
-            stationName = session['search_station']
+        
 
         #print(int(datetime.datetime.strptime('2019/12/3', '%Y/%m/%d').strftime("%s")))
         

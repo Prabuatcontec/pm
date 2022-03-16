@@ -1,7 +1,12 @@
 $(document).ready(function() {
+    
+
+
     $('#mob-gig-date-gteq').change(function() {
         var date = $(this).val();
         console.log(date, 'change')
+
+        
 
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, '0');
@@ -21,6 +26,13 @@ $(document).ready(function() {
         startDate = newDate.getTime()
         endDate = newDate.getTime() + (24 * 60 * 60 * 1000)
 
+        var video = document.getElementById('vido_src');
+
+        var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
+        console.log(yrs)
+        video.src = "/static/videos/"+yrs+"/14/14.mp4";
+        video.play();
+
         $.ajax({
             type: "GET",
             url: "report/data/"+startDate+"/"+endDate+"/"+ye,
@@ -30,31 +42,29 @@ $(document).ready(function() {
             success: function(response) {
 
                 data = (response['result']['time_report_time'][myDate[2]+'-'+myDate[1]+'-'+myDate[0]])
-                console.log(data)
+                 
                 
                 
                 //episodes
                 episodes = '';
                 listss = ['15-60','10-15','5-10','3-5','2-3'];
-                console.log(listss)
+                 
                 ep = 1;
                 for (i = 0; i<listss.length; i++){
                     for (s=0;s<data[listss[i]].length;s++){ 
                         
-                        episodes = episodes + '<tr> <td> <div class="d-flex px-2 py-1">';
+                        episodes = episodes + '<tr  > <td> <div class="d-flex px-2 py-1">';
                         episodes = episodes + '<div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">Episode'+ep+'</h6></div></div>';
                         episodes = episodes + '</td><td><p class="text-xs font-weight-bold mb-0">'+data[listss[i]][s]['from']+' - '+data[listss[i]][s]['to']+'</p></td>';
                         episodes = episodes + '<td><p class="text-xs font-weight-bold mb-0">'+data[listss[i]][s]['diff']+'</p></td>';
                         episodes = episodes + '<td class="align-middle text-center text-sm"><span class="badge badge-sm bg-gradient-success">Online</span>';
-                        episodes = episodes + '</td><td class="align-middle"><a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">Add Tag</a></td>';
+                        episodes = episodes + '</td><td class="align-middle"><a href="javascript:void(0);" class="text-secondary dataval font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user"  data-date="'+data[listss[i]][s]['from']+'" data-from="'+data[listss[i]][s]['from']+'" data-to="'+data[listss[i]][s]['to']+'" >Add Tag</a></td>';
                         episodes = episodes + '</tr>';
-                        
-                        console.log(ep)
+                         
                         ep = ep + 1; 
                     
                 }
-                }
-                console.log(episodes)
+                } 
                 $('#episodes').html(episodes);
                 
             }
@@ -63,6 +73,26 @@ $(document).ready(function() {
 
         
     });
+
+
+    $(document).on('click', '.dataval', function(){
+        var from = $(this).data('from'); 
+        var to = $(this).data('to'); 
+        //2022-03-14 11:53:07
+        fromDate = from.split(" ");
+        myDate = fromDate[0].split("-");
+       
+        var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
+        fromTime = fromDate[1].split(":");
+        tim = fromTime[0];
+        var video = document.getElementById('vido_src');
+        video.src = "/static/videos/"+yrs+"/"+tim+"/"+tim+".mp4";
+        video.play();
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+        console.log(tim);
+    });
+
+     
     var firstMotion;
     var firstShipping;
     var timeIntervalCount;
