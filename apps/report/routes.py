@@ -67,7 +67,8 @@ def reportdatesearch(startdate,enddate,day):
                                                           "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                           "diff": int(int(station[5])/60),
                                                           "startTime":startTime,
-                                                          "endTime":endTime})
+                                                          "endTime":endTime,
+                                                          "tag":station[8]})
             if 600 < station[5] <= 900:
                 p_time = time_report[dt_obj]["10-15"]
                 time_report_count[dt_obj]["10-15"] = int(time_report_count[dt_obj]["10-15"]) + 1
@@ -77,7 +78,8 @@ def reportdatesearch(startdate,enddate,day):
                                                           "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                           "diff": int(int(station[5])/60),
                                                           "startTime":startTime,
-                                                          "endTime":endTime})
+                                                          "endTime":endTime,
+                                                          "tag":station[8]})
 
             if 300 < station[5] <= 600:
                 p_time = time_report[dt_obj]["5-10"]
@@ -88,7 +90,8 @@ def reportdatesearch(startdate,enddate,day):
                                                          "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                          "diff": int(int(station[5])/60),
                                                           "startTime":startTime,
-                                                          "endTime":endTime})
+                                                          "endTime":endTime,
+                                                          "tag":station[8]})
             if 180 < station[5] <= 300:
                 p_time = time_report[dt_obj]["3-5"]
                 time_report_count[dt_obj]["3-5"] = int(time_report_count[dt_obj]["3-5"]) + 1
@@ -98,7 +101,8 @@ def reportdatesearch(startdate,enddate,day):
                                                         "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                         "diff": int(int(station[5])/60),
                                                           "startTime":startTime,
-                                                          "endTime":endTime})
+                                                          "endTime":endTime,
+                                                          "tag":station[8]})
             if 120 < station[5] <= 180:
                 p_time = time_report[dt_obj]["2-3"]
                 time_report_count[dt_obj]["2-3"] = int(time_report_count[dt_obj]["2-3"]) + 1
@@ -108,7 +112,8 @@ def reportdatesearch(startdate,enddate,day):
                                                         "to": datetime.fromtimestamp(int(stationendtime)).strftime("%Y-%m-%d %H:%M:%S"),
                                                         "diff": int(int(station[5])/60),
                                                           "startTime":startTime,
-                                                          "endTime":endTime})
+                                                          "endTime":endTime,
+                                                          "tag":station[8]})
 
     # print(time_report_time)
     station_all_day = {"time_report_count": time_report_count, "time_report": time_report,

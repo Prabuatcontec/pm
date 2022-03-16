@@ -93,20 +93,23 @@ class motions(db.Model):
                     " order by id desc limit 1),(select id as pre_id from "
                     "motions where id < cid  and area = '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
                     " order by id desc limit 1), "
-                        "cid, area,timeadded, timestamp_diff,warehouse,station_type from (select id as cid, area, "
+                        "cid, area,timeadded, timestamp_diff,warehouse,station_type, (Select tagname from episodetags  left join tags ON tags.id=episodetags.tag Where starttime=(select timeadded as  pretimestamp from motions where id < cid   and "
+                    " area =  '"+area+"' and warehouse= "+warehous+" and station_type= "+station_typ+" "
+                    " order by id desc limit 1) and endtime=timeadded and station = '"+area+"' limit 1) from (select id as cid, area, "
                     "timeadded, timeadded - lag(timeadded) "
                     "over (order by timeadded) as timestamp_diff, "
                     "(to_timestamp(timeadded - lag(timeadded) "
                     "over (order by timeadded)/1000) AT TIME ZONE 'PST') "
                     "as dd, (to_timestamp(timeadded - lag(timeadded) "
                     "over (order by timeadded)/1000) AT TIME ZONE 'PST')::timestamp::date as "
-                    "ddate,warehouse,station_type from motions where area = '"+area+"' and warehouse= "+warehous+""
+                    "ddate,warehouse,station_type  "
+                    " from motions where area = '"+area+"' and warehouse= "+warehous+""
                     " and station_type= "+station_typ+" AND   timeadded > "+str(startdate)+" and timeadded < "+str(enddate)+""
                         "   order by timeadded ) t where (timestamp_diff < 14400 "
                         "and timestamp_diff > 119) order by timestamp_diff desc)")
         else:
             qrl = str(" ( Select pre_timestamp, pre_id, cid, area, timeadded, time_difference,    warehouse, "
-                  "station_type from motionsgroup Where  "
+                  "station_type, (Select tagname from episodetags  left join tags ON tags.id=episodetags.tag Where starttime=pre_timestamp and endtime=timeadded and station = '"+area+"' limit 1) from motionsgroup Where  "
                   "   timeadded > "+str(startdate)+" and timeadded  < "+str(enddate)+" and area =  '"+area+"' and "
                   " warehouse= "+warehous+" and station_type= "+station_typ+" order by time_difference desc ) ")
         print(qrl)

@@ -109,7 +109,12 @@ $(document).ready(function() {
                         if (parseInt(data[listss[i]][s]['diff'])>=2 && parseInt(data[listss[i]][s]['diff'])<3) {
                             className = 'bg-gradient-dark';
                         }
-
+                        var tagMe = '';
+                        if(data[listss[i]][s]['tag'] == null) {
+                            tagMe = '';
+                        } else {
+                            tagMe = '<button type="button" class="btn btn-outline-primary btn-sm mb-0">'+data[listss[i]][s]['tag']+'</button>';
+                        }
                         var pFrom = data[listss[i]][s]['from'];
                         var pTo = data[listss[i]][s]['to'];
                         pFrom = pFrom.split(" ");
@@ -118,7 +123,7 @@ $(document).ready(function() {
                         episodes = episodes + '<div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">Episode'+ep+'</h6></div></div>';
                         episodes = episodes + '</td><td><p class="text-xs font-weight-bold mb-0">'+pFrom[1]+' - '+pTo[1]+'</p></td>';
                         episodes = episodes + '<td><span class="badge badge-sm '+className+'">'+data[listss[i]][s]['diff']+'</span></td>';
-                        episodes = episodes + '<td class="align-middle text-center text-sm"><span class="badge badge-sm bg-gradient-success">Online</span>';
+                        episodes = episodes + '<td class="align-middle text-center text-sm">'+tagMe;
                         episodes = episodes + '</td><td class="align-middle"><a href="javascript:void(0);" class="text-secondary dataval font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user"  data-date="'+data[listss[i]][s]['from']+'" data-from="'+data[listss[i]][s]['from']+'" data-to="'+data[listss[i]][s]['to']+'" data-startTime="'+data[listss[i]][s]['startTime']+'" data-endTime="'+data[listss[i]][s]['endTime']+'" >Add Tag</a></td>';
                         episodes = episodes + '</tr>';
                          
