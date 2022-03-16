@@ -28,11 +28,7 @@
                 <div class="col-lg-6 col-7">
                   <h6>Stations Video</h6>
                 </div>
-                <div class="form-group">
-                  <label class="label-control">Date</label>
-                  <input type="date" id="mob-gig-date-gteq" name="trip-start"
-                  value="{{dateNow}}" data-date-format="DD MMMM YYYY" >
-                  </div> 
+                
               </div>
             </div>
             <div class="card-body px-0 pb-2">
@@ -41,6 +37,12 @@
                 <video width="100%" height="450" controls id="vido_src"> <source src="{{url_for('static', filename=file)}}" type="video/mp4"> </video> </div>
             </div>
                <div class="container">
+                <div class="form-group">
+                  <label class="label-control">Date</label>
+                  <input type="date" id="mob-gig-date-gteq" name="trip-start"
+                  value="{{dateNow}}" data-date-format="DD MMMM YYYY" >
+                  <div class="d-flex flex-column justify-content-center"><h6 class="mb-0 text-sm">Time Added</h6></div>
+                </div> 
                 <div class="row">
                   <div class="col-12">
                     <div class="card my-4">
