@@ -10,82 +10,59 @@
 
   <!-- Modal -->
 <div id="alert-container"></div>
-<div class="card-header p-0 position-relative mt-1 mx-3 z-index-2">
-  <div class="bg-gradient-primary shadow-primary border-radius-lg pt-2 pb-1">
-    <h6 class="text-white text-capitalize ps-3"> <span id="station_name"></span></h6>
-  </div>
-</div>
+ 
     <div class="container-fluid py-4">
        
-
+      <div class="input-group input-group-outline mb-3"> 
+        </div> 
 
       <div class="row mb-6">
         <div class="col-lg-12 col-md-6 mb-md-0 mb-4">
           <div class="card">
             <div class="card-header pb-0">
               <div class="row">
-                
-                <div class="col-lg-6 col-7">
-                  <h6>Stations Video</h6>
-                </div>
+                <h6 class="text-capitalize ps-3"> <span id="station_name"></span></h6>
+                <input type="date" id="mob-gig-date-gteq" name="trip-start" class="form-control" style="width:125px;margin-left: 15px;"
+                value="{{dateNow}}" data-date-format="DD MMMM YYYY" >
                 
               </div>
             </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive px-2">
-
-                <video width="100%" height="450" controls id="vido_src"> <source src="{{url_for('static', filename=file)}}" type="video/mp4"> </video> </div>
-            </div>
-               <div class="form-group">
-                 
-                <div class="input-group input-group-outline mb-3"> 
-                  <input type="date" id="mob-gig-date-gteq" name="trip-start" class="form-control"
-                  value="{{dateNow}}" data-date-format="DD MMMM YYYY" > </div> 
-               
-                <div class="input-group input-group-outline mb-3"> <h6 class="mb-0 text-sm" id="time_added"></h6></div>
-                <div class="input-group input-group-outline mb-3"> <div class="form-group input-group input-group-outline mb-3" id="time_added_tag"></div> </div>
-                <div class="input-group input-group-outline mb-3">
-                  <button type="button" id="butt" width="20%" class="btn btn-primary" data-toggle="modal"   class="addTag" data-camera_blueprint="{{ url_for('camera_blueprint.add_episode_tag') }}" >
-                    Add Tag
-                  </button>
-                </div>
-                <input type="hidden" id="fromTime" />
-                <input type="hidden" id="toTime" />
-                <input type="hidden" id="station" />
-                <input type="hidden" id="choosendate" />
-              </div> 
-                
-                <div class="row">
-                  <div class="col-12">
-                    <div class="card my-4">
-                      <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                        <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
-                          <h6 class="text-white text-capitalize ps-3">Episodes</h6>
-                        </div>
+            <div class="">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card my-4">
+                    <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                      <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                        <h6 class="text-white text-capitalize ps-3">Episodes</h6>
                       </div>
-                      <div class="card-body px-0 pb-2">
-                        <div class="table-responsive p-0">
-                          <table class="table align-items-center mb-0">
-                            <thead>
-                              <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Episode</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Between</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Min</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tags</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tag</th>
-                                <th class="text-secondary opacity-7"></th>
-                              </tr>
-                            </thead>
-                            <tbody id="episodes">
-                              
-                                 
-                            </tbody>
-                          </table>
-                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                      <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                          <thead>
+                            <tr>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Episode</th>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Between</th>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Min</th>
+                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tags</th>
+                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tag</th>
+                              <th class="text-secondary opacity-7"></th>
+                            </tr>
+                          </thead>
+                          <tbody id="episodes">
+                            
+                               
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+               
+                
+                
 
    </div>
 </div>
@@ -106,18 +83,31 @@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" style="max-width: 935px;" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Location Detail</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        
+        <video width="100%"  height="450" controls id="vido_src"> <source src="{{url_for('static', filename=file)}}" type="video/mp4"> </video>
+        <div class="form-group">
+                 
+          
+         
+          
+           
+          <div class="input-group input-group-outline mb-3">
+             
+          </div>
+          <input type="hidden" id="fromTime" />
+          <input type="hidden" id="toTime" />
+          <input type="hidden" id="station" />
+          <input type="hidden" id="choosendate" />
+        </div>
       </div>
 
       <div class="modal-footer">
+        <span class="form-group input-group input-group-outline mb-3" id="time_added_tag"></span>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeThis">Close</button>
-        <button type="button" class="btn btn-primary" id="stationFormSubmit" >Save changes</button>
+        <button type="button" id="butt" width="20%"   class="btn btn-primary" data-toggle="modal"   class="addTag" data-camera_blueprint="{{ url_for('camera_blueprint.add_episode_tag') }}" >Save Tag</button>
       </div>
     </div>
   </div>

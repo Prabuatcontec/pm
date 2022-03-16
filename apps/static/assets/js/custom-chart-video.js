@@ -1,6 +1,6 @@
 $(document).ready(function() {
     
-
+   
 
     $('#mob-gig-date-gteq').change(function() {
         var date = $(this).val();
@@ -31,7 +31,7 @@ $(document).ready(function() {
 
         var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
         console.log(yrs)
-        video.src = "/static/videos/"+yrs+"/14/14.mp4";
+        video.src = "/static/videos/"+yrs+"/7/7.mp4";
         video.play();
         
         $.ajax({
@@ -42,7 +42,7 @@ $(document).ready(function() {
             dataType: "json",
             success: function(response) {
                 console.log(response['result']);
-                var selectopt = '<select class="tagSelect" id="tagSelect"  class="form-control">';
+                var selectopt = '<h6 style=" margin-top: 15px; ">Time : </h6><h6 class="mb-0 text-sm btn" id="time_added" style="margin-right: 20px; margin-top: 8px; "></h6><select class="tagSelect" id="tagSelect"  class="form-control">';
                 Object.keys(response['result']).forEach(function(key) {
 
                     console.log(key, response['result'][key]);
@@ -61,6 +61,15 @@ $(document).ready(function() {
         LoadGrid(startDate,endDate,ye,date);
         
     });
+
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    ye = 0
+    today = yyyy + '-' + mm + '-' + dd;
+
+    $('#mob-gig-date-gteq').val(today).change();
 
     function LoadGrid(startDate,endDate,ye,date) {
 
@@ -124,7 +133,7 @@ $(document).ready(function() {
                         episodes = episodes + '</td><td><p class="text-xs font-weight-bold mb-0">'+pFrom[1]+' - '+pTo[1]+'</p></td>';
                         episodes = episodes + '<td><span class="badge badge-sm '+className+'">'+data[listss[i]][s]['diff']+'</span></td>';
                         episodes = episodes + '<td class="align-middle text-center text-sm">'+tagMe;
-                        episodes = episodes + '</td><td class="align-middle"><a href="javascript:void(0);" class="text-secondary dataval font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user"  data-date="'+data[listss[i]][s]['from']+'" data-from="'+data[listss[i]][s]['from']+'" data-to="'+data[listss[i]][s]['to']+'" data-startTime="'+data[listss[i]][s]['startTime']+'" data-endTime="'+data[listss[i]][s]['endTime']+'" >Add Tag</a></td>';
+                        episodes = episodes + '</td><td class="align-middle"><a href="javascript:;" class="text-secondary dataval font-weight-bold text-xs"   data-toggle="modal"  data-original-title="Edit user" data-realtime="'+pFrom[1]+' - '+pTo[1]+'"  data-date="'+data[listss[i]][s]['from']+'" data-from="'+data[listss[i]][s]['from']+'" data-to="'+data[listss[i]][s]['to']+'" data-startTime="'+data[listss[i]][s]['startTime']+'" data-endTime="'+data[listss[i]][s]['endTime']+'" data-target="#exampleModal" >Add Tag</a></td>';
                         episodes = episodes + '</tr>';
                          
                         ep = ep + 1; 
@@ -185,9 +194,15 @@ $(document).ready(function() {
 
 
     $(document).on('click', '.dataval', function(){
+
+        
+        $('html, body').animate({
+            scrollTop: $("#vido_src").offset().top
+        }, 2000);
         var from = $(this).data('from'); 
         var fromTime = $(this).data('starttime'); 
-        var toTime = $(this).data('endtime'); 
+        var toTime = $(this).data('endtime');
+        $('#time_added').html($(this).data('realtime')); 
         $('#fromTime').val(fromTime);
         $('#toTime').val(toTime);
         var to = $(this).data('to'); 
@@ -199,11 +214,13 @@ $(document).ready(function() {
        
         var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
         fromTime = fromDate[1].split(":");
-        tim = fromTime[0];
+        tim = fromTime[0].toString().replace(/^0+/, '');
+        
         var video = document.getElementById('vido_src');
+        video.pause();
         video.src = "/static/videos/"+yrs+"/"+tim+"/"+tim+".mp4";
         video.play();
-        $("html, body").animate({ scrollTop: 0 }, "slow");
+        
         console.log(tim);
     });
 
