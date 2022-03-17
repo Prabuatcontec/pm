@@ -6,22 +6,23 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<div class="row container-fluid py-4">
+<div class="">
 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
             <div class="bg-gradient-primary shadow-primary border-radius-lg pt-2 pb-1">
               <h6 class="text-white text-capitalize ps-3"> <span id="station_name"></span></h6>
             </div>
           </div>
-</div>
+</div> 
     <div class="container-fluid py-4">
 
       <div class="row">
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-3 pt-2">
-              <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+              <a  
+             href="/videos"> <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
                 <i class="material-icons opacity-10">inbox</i>
-              </div>
+              </div> </a>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">7 Days Shipment</p>
                 <h4 class="mb-0"><span id="week_shipment">0</span></h4>
@@ -36,9 +37,10 @@
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-3 pt-2">
-              <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+              <a  
+              href="/videos"> <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
                 <i class="material-icons opacity-10">inbox</i>
-              </div>
+              </div> </a>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize"><span id="yes_shipment">Today</span> Shipment</p>
                 <h4 class="mb-0" id="yesterday_total">0</h4>
@@ -53,9 +55,10 @@
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-3 pt-2">
-              <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+              <a  
+              href="/videos"> <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
                 <i class="material-icons opacity-10">person</i>
-              </div>
+              </div> </a>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize"><span id="data-activity">Today</span> Inactive</p>
                 <h4 class="mb-0" id="inactive_today">0</h4>
@@ -70,9 +73,10 @@
         <div class="col-xl-3 col-sm-6">
           <div class="card">
             <div class="card-header p-3 pt-2">
-              <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
+              <a  
+              href="/videos"> <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
                 <i class="material-icons opacity-10">weekend</i>
-              </div>
+              </div></a>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">High Volume hr</p>
                 <h4 class="mb-0" id="high_volume">0</h4>

@@ -101,13 +101,18 @@
           <input type="hidden" id="toTime" />
           <input type="hidden" id="station" />
           <input type="hidden" id="choosendate" />
+          <input type="hidden" id="video_hr" />
         </div>
       </div>
-
-      <div class="modal-footer">
-        <span class="form-group input-group input-group-outline mb-3" id="time_added_tag"></span>
+      <div class="modal-footer" style="flex-wrap: nowrap;padding-bottom: -190px!important;position: absolute;margin-top: 430px;border: none;">
+        
+        <button type="button" id="pre" class="btn btn-secondary"  style="padding: 5px;"  ><<</button>
+        <button type="button" id="next"  class="btn btn-primary" style="padding: 5px;margin-left: 850px;" >>></button>
+      </div>
+      <div class="modal-footer" style="flex-wrap: nowrap;">
+        <span class="form-group input-group input-group-outline mb-3" id="time_added_tag" ></span>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeThis">Close</button>
-        <button type="button" id="butt" width="20%"   class="btn btn-primary" data-toggle="modal"   class="addTag" data-camera_blueprint="{{ url_for('camera_blueprint.add_episode_tag') }}" >Save Tag</button>
+        <button type="button" id="butt" width="20%"   class="btn btn-primary" data-toggle="modal"   class="addTag" data-camera_blueprint="{{ url_for('camera_blueprint.add_episode_tag') }}" >Add</button>
       </div>
     </div>
   </div>

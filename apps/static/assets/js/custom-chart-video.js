@@ -193,12 +193,38 @@ $(document).ready(function() {
     });
 
 
+    $(document).on('click', '#pre', function(){
+
+          
+        
+        var video = document.getElementById('vido_src');
+        splitscr = video.src.split("/");
+        tim = parseInt(splitscr[6])-1;
+        video.pause();
+        video.src = "/static/videos/"+splitscr[5]+"/"+tim+"/"+tim+".mp4";
+        video.play();
+        
+        console.log(video.src.split("/"));
+    });
+
+    $(document).on('click', '#next', function(){
+
+          
+        
+        var video = document.getElementById('vido_src');
+        splitscr = video.src.split("/");
+        tim = parseInt(splitscr[6])+1;
+        video.pause();
+        video.src = "/static/videos/"+splitscr[5]+"/"+tim+"/"+tim+".mp4";
+        video.play();
+        
+        console.log(video.src.split("/"));
+    });
+
+
     $(document).on('click', '.dataval', function(){
 
-        
-        $('html, body').animate({
-            scrollTop: $("#vido_src").offset().top
-        }, 2000);
+         
         var from = $(this).data('from'); 
         var fromTime = $(this).data('starttime'); 
         var toTime = $(this).data('endtime');
@@ -206,8 +232,7 @@ $(document).ready(function() {
         $('#fromTime').val(fromTime);
         $('#toTime').val(toTime);
         var to = $(this).data('to'); 
-        console.log(fromTime)
-        console.log(toTime)
+        
         //2022-03-14 11:53:07
         fromDate = from.split(" ");
         myDate = fromDate[0].split("-");
@@ -215,10 +240,18 @@ $(document).ready(function() {
         var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
         fromTime = fromDate[1].split(":");
         tim = fromTime[0].toString().replace(/^0+/, '');
+        overallTime = parseInt((23*60))-5;
+        tim1 = parseInt((fromTime[1]*60/2.5))-5
+        console.log("====================");
+        console.log(overallTime);
+        console.log(tim1);
+
+        $("#video_hr").val(tim);
+        
         
         var video = document.getElementById('vido_src');
         video.pause();
-        video.src = "/static/videos/"+yrs+"/"+tim+"/"+tim+".mp4";
+        video.src = "/static/videos/"+yrs+"/"+tim+"/"+tim+".mp4#t="+tim1+","+overallTime;
         video.play();
         
         console.log(tim);

@@ -55,7 +55,7 @@ class motions(db.Model):
         db.session.commit()
         return stations if stations else None
 
-    def motion_loader_byarea(area, warehous='1', station_typ='1', fromtime=14400, totime=60):
+    def motion_loader_byarea(area, warehous='1', station_typ='1', fromtime=14400, totime=119):
         qrl = str(" ( Select pre_timestamp, pre_id, cid, area, timeadded, time_difference,    warehouse, "
                   "station_type from motionsgroup Where (to_timestamp(timeadded) AT TIME ZONE 'PST') >= current_date - 7"
                   " and time_difference < "+str(fromtime)+" and time_difference > "+str(totime)+" and area =  '"+area+"' and "
@@ -75,7 +75,7 @@ class motions(db.Model):
                    "ddate,warehouse,station_type from motions where area = '"+area+"' and warehouse= "+warehous+""
                   " and station_type= "+station_typ+" AND  (to_timestamp(timeadded) AT TIME ZONE 'PST') "
                     ">= current_date - 7  order by timeadded ) t where (timestamp_diff < 14400 "
-                    "and timestamp_diff > 60) order by timestamp_diff desc)")
+                    "and timestamp_diff > 119) order by timestamp_diff desc)")
         
         stations = db.session.execute(qrl)
         db.session.remove()
@@ -83,7 +83,7 @@ class motions(db.Model):
         db.session.commit()
         return stations if stations else None
     
-    def motion_loader_byarea_date(area, startdate,enddate ,day, warehous='1', station_typ='1', fromtime=14400, totime=60):
+    def motion_loader_byarea_date(area, startdate,enddate ,day, warehous='1', station_typ='1', fromtime=14400, totime=119):
         startdate = str(startdate)[:10]
         enddate = str(enddate)[:10]
 
