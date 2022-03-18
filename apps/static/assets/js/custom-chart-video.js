@@ -1,11 +1,20 @@
 $(document).ready(function() {
     
-   
+    $.ajax({
+        type: "GET",
+        url: "/report/tag/data",
+        data: {},
+        contentType: "application/json",
+        dataType: "json",
+        success: function(response) {
+            console.log(response['result']);
+        }
+    });
 
     $('#mob-gig-date-gteq').change(function() {
         var date = $(this).val();
         $('#choosendate').val(date)
-        console.log(date, 'change')
+        
 
         
 
@@ -19,7 +28,7 @@ $(document).ready(function() {
         if(date == today){
             ye = 1;
         }
-        console.log(ye, 'change')
+        
         var myDate = date;  
         myDate = myDate.split("-");
         var newDate = new Date( myDate[0], myDate[1] - 1, myDate[2]);
@@ -27,12 +36,13 @@ $(document).ready(function() {
         startDate = newDate.getTime()
         endDate = newDate.getTime() + (24 * 60 * 60 * 1000)
 
-        var video = document.getElementById('vido_src');
+        // var video = document.getElementById('vido_src');
 
-        var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
-        console.log(yrs)
-        video.src = "/static/videos/"+yrs+"/7/7.mp4";
-        video.play();
+        // var yrs = myDate[0]+''+(myDate[1]).toString().replace(/^0+/, '')+''+myDate[2].toString().replace(/^0+/, '');
+        
+        
+        // video.src = "/static/videos/"+yrs+"/7/7.mp4";
+        // video.play();
         
         $.ajax({
             type: "GET",
@@ -41,11 +51,10 @@ $(document).ready(function() {
             contentType: "application/json",
             dataType: "json",
             success: function(response) {
-                console.log(response['result']);
+                
                 var selectopt = '<h6 style=" margin-top: 15px; ">Time : </h6><h6 class="mb-0 text-sm btn" id="time_added" style="margin-right: 20px; margin-top: 8px; "></h6><select class="tagSelect" id="tagSelect"  class="form-control">';
                 Object.keys(response['result']).forEach(function(key) {
-
-                    console.log(key, response['result'][key]);
+ 
 
                     selectopt = selectopt+'<option value="'+response['result'][key]+'">'+key+'</option>';
                   
@@ -151,7 +160,6 @@ $(document).ready(function() {
     $(document).on('click', '#butt', function(){
          
         var date = $('#choosendate').val()
-        console.log(date, 'change')
         var tag = $('#tagSelect').val();
         var starttime = $('#fromTime').val();
         var endtime = $('#toTime').val();
@@ -195,30 +203,21 @@ $(document).ready(function() {
 
     $(document).on('click', '#pre', function(){
 
-          
-        
         var video = document.getElementById('vido_src');
         splitscr = video.src.split("/");
         tim = parseInt(splitscr[6])-1;
         video.pause();
         video.src = "/static/videos/"+splitscr[5]+"/"+tim+"/"+tim+".mp4";
         video.play();
-        
-        console.log(video.src.split("/"));
     });
 
     $(document).on('click', '#next', function(){
-
-          
-        
         var video = document.getElementById('vido_src');
         splitscr = video.src.split("/");
         tim = parseInt(splitscr[6])+1;
         video.pause();
         video.src = "/static/videos/"+splitscr[5]+"/"+tim+"/"+tim+".mp4";
-        video.play();
-        
-        console.log(video.src.split("/"));
+        video.play(); 
     });
 
 
@@ -242,9 +241,7 @@ $(document).ready(function() {
         tim = fromTime[0].toString().replace(/^0+/, '');
         overallTime = parseInt((23*60))-5;
         tim1 = parseInt((fromTime[1]*60/2.5))-5
-        console.log("====================");
-        console.log(overallTime);
-        console.log(tim1);
+        
 
         $("#video_hr").val(tim);
         
@@ -254,7 +251,7 @@ $(document).ready(function() {
         video.src = "/static/videos/"+yrs+"/"+tim+"/"+tim+".mp4#t="+tim1+","+overallTime;
         video.play();
         
-        console.log(tim);
+        
     });
 
      

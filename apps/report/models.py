@@ -112,7 +112,7 @@ class motions(db.Model):
                   "station_type, (Select tagname from episodetags  left join tags ON tags.id=episodetags.tag Where starttime=pre_timestamp and endtime=timeadded and station = '"+area+"' limit 1) from motionsgroup Where  "
                   "   timeadded > "+str(startdate)+" and timeadded  < "+str(enddate)+" and area =  '"+area+"' and "
                   " warehouse= "+warehous+" and station_type= "+station_typ+" order by time_difference desc ) ")
-        print(qrl)
+        
         stations = db.session.execute(qrl)
         db.session.remove()
         db.session.close()
@@ -193,6 +193,16 @@ class motions(db.Model):
     def actionin_shipping_data_tag(area):
         qry = str("Select id,tagname from tags")
 
+        box_cnt = db.session.execute(qry)
+        db.session.remove()
+        db.session.close()
+        db.session.commit()
+        return box_cnt if box_cnt else None
+
+    def actionin_tag_data(area):
+        qry = str("Select starttime,endtime,station,tag,tagname from episodetags left join tags ON tags.id=episodetags.tag "
+        " Where   (to_timestamp(starttime) AT TIME ZONE 'PST') >= current_date - 7 AND station='"+area+"'")
+        
         box_cnt = db.session.execute(qry)
         db.session.remove()
         db.session.close()

@@ -11,7 +11,7 @@ from apps.camera.cameravideo import VideoDataCamera
 from apps import db,login_manager
 from apps.camera import blueprint
 from flask_login import login_required
-
+from apps.report.models import motions
 import pickle
 import os
 import json
@@ -37,7 +37,17 @@ def station_feed():
 
 
 
-
+@blueprint.route('/add_episode_tag', methods=['POST'])
+def add_episode_tag():
+   
+    responseBody = {"results": "sdadasd"}
+    data = request.get_json()
+    tag = data['tag']
+    station = data['station']
+    starttime = data['starttime']
+    endtime = data['endtime']
+    stationTime = motions.add_episode_tag(tag, station, starttime, endtime)
+    return jsonify(responseBody), 200
 
 @blueprint.route('/get_station_name', methods=['POST'])
 def get_station_name():

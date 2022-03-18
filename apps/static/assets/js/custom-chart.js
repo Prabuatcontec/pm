@@ -598,7 +598,138 @@ var color = {0:'#ffffff',
         });
     }
 
+$.ajax({
+        type: "GET",
+        url: "/report/tag/data",
+        data: {},
+        contentType: "application/json",
+        dataType: "json",
+        success: function(response) {
+            tagDates = response['result']
+            console.log(response)
+            var ctx = document.getElementById("chart-line").getContext("2d");
+            tags = Object.values(response['tags']);
+                    var dataset = [];
+                    for (w = 0; w <= tags.length; w++) {
+                        var dataarr = []
+                        for (o = 0; o <= 6; o++) {
+                            if(tagDates[lab[o]] !== undefined){
+                                var c = 0;
+                                if (tagDates[lab[o]][tags[w]] !== undefined) {
+                                    c = tagDates[lab[o]][tags[w]]
+                                }
+                                dataarr[o] = tagDates[lab[o]][tags[w]]
+                            }
+                        }
+                        var dset = {
+                            label: tags[w],
+                            borderWidth: 0,
+                            borderRadius: 1,
+                            borderSkipped: false,
+                            backgroundColor: color[w + 3],
+                            data: dataarr,
+                            maxBarThickness: 15
+                        }
+                        dataset.push(dset)
 
+                    }
+
+
+
+
+                    var timedata = new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: lab_num,
+                            datasets: dataset,
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            var label = context.dataset.label || '';
+
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.y !== null) {
+                                                label += parseInt(context.parsed.y);
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index',
+                            },
+                            scales: {
+                                y: {
+                                    stacked: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        display: true,
+                                        drawOnChartArea: true,
+                                        drawTicks: false,
+                                        borderDash: [5, 5],
+                                        color: 'rgba(255, 255, 255, .2)'
+                                    },
+                                    ticks: {
+                                        suggestedMin: 0,
+                                        suggestedMax: 500,
+                                        beginAtZero: true,
+                                        padding: 10,
+                                        font: {
+                                            size: 14,
+                                            weight: 300,
+                                            family: "Roboto",
+                                            style: 'normal',
+                                            lineHeight: 2
+                                        },
+                                        color: "#fff",
+                                        callback: function(label, index, labels) {
+                                            return label;
+
+                                            // return _label;
+                                        }
+                                    },
+                                },
+                                x: {
+                                    stacked: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        display: true,
+                                        drawOnChartArea: true,
+                                        drawTicks: false,
+                                        borderDash: [5, 5],
+                                        color: 'rgba(255, 255, 255, .2)',
+
+                                    },
+                                    ticks: {
+                                        display: true,
+                                        color: '#f8f9fa',
+                                        padding: 10,
+                                        font: {
+                                            size: 14,
+                                            weight: 300,
+                                            family: "Roboto",
+                                            style: 'normal',
+                                            lineHeight: 2
+                                        }
+                                    }
+                                },
+                            },
+                        },
+                    });
+        }
+    });
 
         function ShippingCharBar() {
             $.ajax({
@@ -1128,117 +1259,117 @@ var color = {0:'#ffffff',
             lab_num.push(finalDateNum)
         }
 
-        var ctx2 = document.getElementById("chart-line").getContext("2d");
+        // var ctx2 = document.getElementById("chart-line").getContext("2d");
 
-        for (so = 0; so <= 6; so++) {
-            if (firstMotion[lab[so]] === undefined) {
-                firstMotion[lab[so]] = 0;
-                firstShipping[lab[so]] = 0;
+        // for (so = 0; so <= 6; so++) {
+        //     if (firstMotion[lab[so]] === undefined) {
+        //         firstMotion[lab[so]] = 0;
+        //         firstShipping[lab[so]] = 0;
 
-            }
-        }
+        //     }
+        // }
 
-        new Chart(ctx2, {
-            type: "line",
-            data: {
-                labels: lab_num,
-                datasets: [{
-                    label: "Boxing area",
-                    tension: 0,
-                    borderWidth: 0,
-                    pointRadius: 5,
-                    pointBackgroundColor: "rgba(255, 255, 255, .6)",
-                    pointBorderColor: "transparent",
-                    borderColor: "rgba(255, 255, 255, .6)",
-                    borderColor: "rgba(255, 255, 255, .6)",
-                    borderWidth: 4,
-                    backgroundColor: "transparent",
-                    fill: true,
-                    data: [parseInt(firstShipping[lab[0]] - firstMotion[lab[0]]) / 60, parseInt(firstShipping[lab[1]] - firstMotion[lab[1]]) / 60, parseInt(firstShipping[lab[2]] - firstMotion[lab[2]]) / 60, parseInt(firstShipping[lab[3]] - firstMotion[lab[3]] ) / 60, parseInt(firstShipping[lab[4]] - firstMotion[lab[4]] ) / 60, parseInt(firstShipping[lab[5]]- firstMotion[lab[5]] ) / 60, parseInt(firstShipping[lab[6]] - firstMotion[lab[6]] ) / 60],
-                    maxBarThickness: 6,
-                    hoverOffset: 4
+        // new Chart(ctx2, {
+        //     type: "line",
+        //     data: {
+        //         labels: lab_num,
+        //         datasets: [{
+        //             label: "Boxing area",
+        //             tension: 0,
+        //             borderWidth: 0,
+        //             pointRadius: 5,
+        //             pointBackgroundColor: "rgba(255, 255, 255, .6)",
+        //             pointBorderColor: "transparent",
+        //             borderColor: "rgba(255, 255, 255, .6)",
+        //             borderColor: "rgba(255, 255, 255, .6)",
+        //             borderWidth: 4,
+        //             backgroundColor: "transparent",
+        //             fill: true,
+        //             data: [parseInt(firstShipping[lab[0]] - firstMotion[lab[0]]) / 60, parseInt(firstShipping[lab[1]] - firstMotion[lab[1]]) / 60, parseInt(firstShipping[lab[2]] - firstMotion[lab[2]]) / 60, parseInt(firstShipping[lab[3]] - firstMotion[lab[3]] ) / 60, parseInt(firstShipping[lab[4]] - firstMotion[lab[4]] ) / 60, parseInt(firstShipping[lab[5]]- firstMotion[lab[5]] ) / 60, parseInt(firstShipping[lab[6]] - firstMotion[lab[6]] ) / 60],
+        //             maxBarThickness: 6,
+        //             hoverOffset: 4
 
-                }],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                var label = context.dataset.label || '';
+        //         }],
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         maintainAspectRatio: false,
+        //         plugins: {
+        //             legend: {
+        //                 display: false,
+        //             },
+        //             tooltip: {
+        //                 callbacks: {
+        //                     label: function(context) {
+        //                         var label = context.dataset.label || '';
 
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += parseInt(context.parsed.y) + ' min';
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            display: true,
-                            drawOnChartArea: true,
-                            drawTicks: false,
-                            borderDash: [5, 5],
-                            color: 'rgba(255, 255, 255, .2)'
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#f8f9fa',
-                            callback: function(label, index, labels) {
-                                return label + ' min';
+        //                         if (label) {
+        //                             label += ': ';
+        //                         }
+        //                         if (context.parsed.y !== null) {
+        //                             label += parseInt(context.parsed.y) + ' min';
+        //                         }
+        //                         return label;
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         interaction: {
+        //             intersect: false,
+        //             mode: 'index',
+        //         },
+        //         scales: {
+        //             y: {
+        //                 grid: {
+        //                     drawBorder: false,
+        //                     display: true,
+        //                     drawOnChartArea: true,
+        //                     drawTicks: false,
+        //                     borderDash: [5, 5],
+        //                     color: 'rgba(255, 255, 255, .2)'
+        //                 },
+        //                 ticks: {
+        //                     display: true,
+        //                     color: '#f8f9fa',
+        //                     callback: function(label, index, labels) {
+        //                         return label + ' min';
 
-                                // return _label;
-                            },
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                        }
-                    },
-                    x: {
-                        grid: {
-                            drawBorder: false,
-                            display: false,
-                            drawOnChartArea: false,
-                            drawTicks: false,
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#f8f9fa',
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                        }
-                    },
-                },
-            },
-        });
+        //                         // return _label;
+        //                     },
+        //                     padding: 10,
+        //                     font: {
+        //                         size: 14,
+        //                         weight: 300,
+        //                         family: "Roboto",
+        //                         style: 'normal',
+        //                         lineHeight: 2
+        //                     },
+        //                 }
+        //             },
+        //             x: {
+        //                 grid: {
+        //                     drawBorder: false,
+        //                     display: false,
+        //                     drawOnChartArea: false,
+        //                     drawTicks: false,
+        //                     borderDash: [5, 5]
+        //                 },
+        //                 ticks: {
+        //                     display: true,
+        //                     color: '#f8f9fa',
+        //                     padding: 10,
+        //                     font: {
+        //                         size: 14,
+        //                         weight: 300,
+        //                         family: "Roboto",
+        //                         style: 'normal',
+        //                         lineHeight: 2
+        //                     },
+        //                 }
+        //             },
+        //         },
+        //     },
+        // });
 
 
 

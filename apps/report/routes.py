@@ -613,6 +613,33 @@ def report_shipping_tags():
         tags[tag[1]] = tag[0] 
     result = {"result":tags}
     return jsonify(result), 200
+
+@blueprint.route('/report/tag/data')
+@login_required
+def actionin_tag_data():
+    stationTags = motions.actionin_tag_data(session['search_station'])
+     
+    tags = {}
+    tagsAdded = {}
+    for tag in stationTags:
+        stationstarttime = session['timedep'] + tag[0];
+        dt_obj = datetime.fromtimestamp(stationstarttime).strftime('%d-%m-%Y')
+        if dt_obj not in tags:
+            tags[dt_obj] = {}
+        starttime = str(tag[0])
+        
+        tagname = str(tag[4])
+        if tagname == 'Break':
+            tagname = 'Brk'
+        if tagname not in tags[dt_obj]:
+            tags[dt_obj][tagname] = 0 
+        time_difference = (tag[1] - tag[0])/60;
+        time_difference = tags[dt_obj][tagname] + time_difference
+        tags[dt_obj][tagname] = int(time_difference)
+        if tagname not in tagsAdded:
+            tagsAdded[tagname] = tagname
+    result = {"result":tags,"tags": tagsAdded}
+    return jsonify(result), 200
     
 
 
