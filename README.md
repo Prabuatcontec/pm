@@ -31,8 +31,9 @@ $
 $ # Start the application (development mode)
 $ # --host=0.0.0.0 - expose the app on all network interfaces (default 127.0.0.1)
 $ # --port=5000    - specify the app port (default 5000)  
-$ flask run --host=0.0.0.0 --port=5000
-$
+$ flask run --host=0.0.0.0 --port=5000 # running the application
+$ Python3.8 pyi.py # for pulling the data from deepblu and capturing the motion
+$ Python3.8 gray.py # saving  the video
 $ # Access the dashboard in browser: http://127.0.0.1:5000/
 ```
 
